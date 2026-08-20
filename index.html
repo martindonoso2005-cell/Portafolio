@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafolio Martín</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* Header */
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3.5rem 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-info h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+
+    .header-info p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 0.25rem;
+    }
+
+    .admin-toggle-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-toggle-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    /* Panel Admin (Solo visible para ti) */
+    .admin-panel {
+      max-width: 1200px;
+      margin: 2rem auto;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      padding: 1.5rem;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    .admin-panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .admin-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .form-group input, .form-group textarea {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      height: 38px;
+    }
+
+    .btn-submit {
+      grid-column: 1 / -1;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 200px;
+      justify-self: end;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Grid de Proyectos / Ventanas */
+    main {
+      max-width: 1200px;
+      margin: 3rem auto 0;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+    }
+
+    /* Estilo tipo Ventana / Tarjeta */
+    .project-window {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .project-window:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Barra superior estilo ventana OS */
+    .window-header {
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+
+    .window-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Enlace que envuelve la tarjeta */
+    .project-link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .image-container {
+      width: 100%;
+      height: 200px;
+      background: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .project-window:hover .image-container img {
+      transform: scale(1.03);
+    }
+
+    .project-body {
+      padding: 1.25rem 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .project-body h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .project-body h3::after {
+      content: "↗";
+      font-size: 1.1rem;
+      color: var(--accent);
+      transition: transform 0.2s;
+    }
+
+    .project-window:hover .project-body h3::after {
+      transform: translate(2px, -2px);
+    }
+
+    .project-body p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    .tag-badge {
+      display: inline-block;
+      align-self: flex-start;
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    /* Botón eliminar (visible solo en modo admin) */
+    .delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      cursor: pointer;
+      display: none;
+      z-index: 10;
+    }
+
+    .admin-mode .delete-btn {
+      display: block;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-muted);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header>
+    <div class="header-info">
+      <h1>Portafolio Martín</h1>
+      <p>Explora mis proyectos activos y aplicaciones interactivas.</p>
+    </div>
+    <button class="admin-toggle-btn" id="adminToggle" title="Atajo: Alt + A">⚙ Modo Gestor</button>
+  </header>
+
+  <!-- Panel de Gestión (Para que tú agregues los links e imágenes) -->
+  <section class="admin-panel" id="adminPanel">
+    <h2>+ Agregar Nuevo Proyecto Activo</h2>
+    <form class="admin-form" id="projectForm">
+      <div class="form-group">
+        <label for="pTitle">Título del Proyecto</label>
+        <input type="text" id="pTitle" placeholder="Ej. Sonificador Espectral NASA" required>
+      </div>
+
+      <div class="form-group">
+        <label for="pLink">Enlace del Proyecto (URL)</label>
+        <input type="url" id="pLink" placeholder="https://mi-proyecto.app" required>
+      </div>
+
+      <div class="form-group">
+        <label for="pImg">URL de la Imagen / Captura</label>
+        <input type="url" id="pImg" placeholder="https://images.unsplash.com/..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="pTag">Categoría / Etiqueta</label>
+        <input type="text" id="pTag" placeholder="Ej. Web Audio, IA, Web App">
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label for="pDesc">Descripción Corta</label>
+        <textarea id="pDesc" placeholder="Breve explicación de lo que hace el proyecto..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Guardar y Publicar</button>
+    </form>
+  </section>
+
+  <!-- Galería de Proyectos (Ventanas) -->
+  <main>
+    <div class="projects-grid" id="projectsContainer">
+      <!-- Se cargarán dinámicamente mediante JS -->
+    </div>
+  </main>
+
+  <script>
+    // Proyectos iniciales por defecto (puedes editarlos o borrarlos desde el modo gestor)
+    const DEFAULT_PROJECTS = [
+      {
+        id: 1,
+        title: "Sonificador de Imágenes",
+        url: "https://ejemplo.com/sonificador",
+        img: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
+        desc: "Sintetizador web que traduce imágenes astronómicas a frecuencias y timbres de órgano estilo NASA.",
+        tag: "Web Audio API"
+      },
+      {
+        id: 2,
+        title: "Explorador Planetario 3D",
+        url: "https://ejemplo.com/planetas",
+        img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80",
+        desc: "Visualizador orbital interactivo con texturas de alta definición y física gravitacional.",
+        tag: "WebGL / Three.js"
+      }
+    ];
+
+    // Carga desde localStorage o asigna los predeterminados
+    let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects')) || DEFAULT_PROJECTS;
+
+    const projectsContainer = document.getElementById('projectsContainer');
+    const adminToggle = document.getElementById('adminToggle');
+    const adminPanel = document.getElementById('adminPanel');
+    const projectForm = document.getElementById('projectForm');
+
+    let isAdmin = false;
+
+    // Renderizar tarjetas
+    function renderProjects() {
+      projectsContainer.innerHTML = '';
+
+      if (projects.length === 0) {
+        projectsContainer.innerHTML = `
+          <div class="empty-state">
+            <p>No hay proyectos activos todavía.</p>
+            <small>Haz clic en "Modo Gestor" para añadir tu primer enlace.</small>
+          </div>
+        `;
+        return;
+      }
+
+      projects.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'project-window';
+        
+        card.innerHTML = `
+          <div class="window-header">
+            <div class="window-dots">
+              <div class="dot red"></div>
+              <div class="dot yellow"></div>
+              <div class="dot green"></div>
+            </div>
+            <span class="window-title">Activo</span>
+          </div>
+
+          <button class="delete-btn" onclick="deleteProject(${p.id})">Eliminar</button>
+
+          <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="project-link">
+            <div class="image-container">
+              <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=Sin+Imagen'">
+            </div>
+            <div class="project-body">
+              <h3>${p.title}</h3>
+              <p>${p.desc || 'Haz clic para abrir el proyecto en una nueva ventana.'}</p>
+              ${p.tag ? `<span class="tag-badge">${p.tag}</span>` : ''}
+            </div>
+          </a>
+        `;
+
+        projectsContainer.appendChild(card);
+      });
+    }
+
+    // Toggle modo Admin
+    function toggleAdmin() {
+      isAdmin = !isAdmin;
+      adminPanel.classList.toggle('active', isAdmin);
+      document.body.classList.toggle('admin-mode', isAdmin);
+      adminToggle.textContent = isAdmin ? '✕ Cerrar Gestor' : '⚙ Modo Gestor';
+    }
+
+    adminToggle.addEventListener('click', toggleAdmin);
+
+    // Atajo de teclado: Alt + A para abrir/cerrar panel
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey && (e.key === 'a' || e.key === 'A')) {
+        toggleAdmin();
+      }
+    });
+
+    // Guardar nuevo proyecto
+    projectForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newProject = {
+        id: Date.now(),
+        title: document.getElementById('pTitle').value.trim(),
+        url: document.getElementById('pLink').value.trim(),
+        img: document.getElementById('pImg').value.trim(),
+        tag: document.getElementById('pTag').value.trim(),
+        desc: document.getElementById('pDesc').value.trim()
+      };
+
+      projects.unshift(newProject);
+      localStorage.setItem('martin_portfolio_projects', JSON.stringify(projects));
+
+      renderProjects();
+      projectForm.reset();
+    });
+
+    // Borrar proyecto
+    window.deleteProject = function(id) {
+      if (confirm('¿Seguro que deseas eliminar este proyecto?')) {
+        projects = projects.filter(p => p.id !== id);
+        localStorage.setItem('martin_portfolio_projects', JSON.stringify(projects));
+        renderProjects();
+      }
+    };
+
+    // Inicializar
+    renderProjects();
+  </script>
+</body>
+</html>
