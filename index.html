@@ -3,84 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portafolio Martín</title>
+  <title>Portafolio Martín - Retro Arcade</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #ffffff;
-      --surface: #f8fafc;
-      --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-      --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --bg: #181425;          /* Púrpura noche arcade */
+      --surface: #262b44;     /* Azul profundo UI */
+      --card-bg: #3a4466;     /* Gris azulado paneles */
+      --border-dark: #000000; /* Delineado negro puro píxel */
+      --text-main: #f4f4f4;   /* Blanco tiza */
+      --text-muted: #8b9bb4;  /* Gris retro legible */
+      --accent: #ffcc00;      /* Amarillo arcade / Monedas */
+      --accent-hover: #ffae00;/* Ámbar */
+      --accent-cyan: #00f0ff; /* Cian retro */
+      --danger: #ff0055;      /* Rojo arcade */
+      --pixel-shadow: 4px 4px 0px #000000;
+      --pixel-shadow-lg: 6px 6px 0px #000000;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      image-rendering: pixelated;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Press Start 2P', monospace;
       background-color: var(--bg);
       color: var(--text-main);
-      line-height: 1.5;
-      padding: 0 1.5rem 4rem;
+      line-height: 1.8;
+      padding: 0 1.5rem 5rem;
+      /* Efecto sutil de fondo CRT/píxel */
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+      background-size: 24px 24px;
     }
 
-    /* Header */
+    /* Header Centrado */
     header {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 3.5rem 0 2rem;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-bottom: 4px dashed var(--border-dark);
+      position: relative;
     }
 
     .header-info h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text-main);
+      font-size: 1.8rem;
+      letter-spacing: -0.05em;
+      color: var(--accent);
+      text-shadow: 3px 3px 0px #000;
+      margin-bottom: 0.8rem;
     }
 
     .header-info p {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      margin-top: 0.25rem;
+      color: var(--accent-cyan);
+      font-size: 0.75rem;
+      text-shadow: 2px 2px 0px #000;
+      margin-bottom: 1.5rem;
     }
 
     .admin-toggle-btn {
+      font-family: inherit;
       background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      border: 3px solid var(--border-dark);
+      color: var(--text-main);
+      padding: 0.6rem 1rem;
+      font-size: 0.65rem;
       cursor: pointer;
-      transition: all 0.2s;
+      box-shadow: var(--pixel-shadow);
+      transition: none;
     }
 
     .admin-toggle-btn:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
+      background: var(--accent);
+      color: #000;
+      transform: translate(-2px, -2px);
+      box-shadow: var(--pixel-shadow-lg);
     }
 
-    /* Panel Admin (Solo visible para ti) */
+    .admin-toggle-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Panel Admin Estilo Consola/Inventario */
     .admin-panel {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 2rem auto;
-      background: #f8fafc;
-      border: 2px dashed #cbd5e1;
+      background: var(--surface);
+      border: 4px solid var(--border-dark);
       padding: 1.5rem;
-      border-radius: 12px;
+      box-shadow: var(--pixel-shadow);
       display: none;
     }
 
@@ -89,95 +112,108 @@
     }
 
     .admin-panel h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 0px #000;
     }
 
     .admin-form {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
+      gap: 1.2rem;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.5rem;
     }
 
     .form-group label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
+      font-size: 0.6rem;
+      color: var(--accent-cyan);
     }
 
-    .form-group input, .form-group textarea {
-      padding: 0.6rem 0.8rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.9rem;
+    .form-group input, 
+    .form-group textarea {
       font-family: inherit;
+      padding: 0.6rem;
+      background: #10121c;
+      color: #fff;
+      border: 3px solid var(--border-dark);
+      font-size: 0.7rem;
+      outline: none;
+      box-shadow: inset 2px 2px 0px #000;
+    }
+
+    .form-group input:focus, 
+    .form-group textarea:focus {
+      background: #1a1e30;
+      border-color: var(--accent-cyan);
     }
 
     .form-group textarea {
       resize: vertical;
-      height: 38px;
+      min-height: 50px;
     }
 
     .btn-submit {
+      font-family: inherit;
       grid-column: 1 / -1;
       background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.75rem;
-      border-radius: 6px;
-      font-weight: 600;
+      color: #000;
+      border: 3px solid var(--border-dark);
+      padding: 0.8rem;
+      font-size: 0.75rem;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
-      width: 200px;
+      box-shadow: var(--pixel-shadow);
       justify-self: end;
     }
 
     .btn-submit:hover {
       background: var(--accent-hover);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--pixel-shadow-lg);
     }
 
-    /* Grid de Proyectos / Ventanas */
+    .btn-submit:active {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Galería de Proyectos / Cajas de Juego */
     main {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 3rem auto 0;
     }
 
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2.5rem;
     }
 
-    /* Estilo tipo Ventana / Tarjeta */
     .project-window {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      border: 4px solid var(--border-dark);
+      box-shadow: var(--pixel-shadow);
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
     .project-window:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
+      transform: translate(-3px, -3px);
+      box-shadow: var(--pixel-shadow-lg);
     }
 
-    /* Barra superior estilo ventana OS */
+    /* Ventana tipo Retro OS */
     .window-header {
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border);
-      padding: 0.65rem 1rem;
+      background: var(--surface);
+      border-bottom: 4px solid var(--border-dark);
+      padding: 0.6rem 0.8rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -185,27 +221,24 @@
 
     .window-dots {
       display: flex;
-      gap: 6px;
+      gap: 5px;
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--border-dark);
     }
-    .dot.red { background: #ef4444; }
-    .dot.yellow { background: #f59e0b; }
-    .dot.green { background: #10b981; }
+    .dot.red { background: var(--danger); }
+    .dot.yellow { background: var(--accent); }
+    .dot.green { background: #38b764; }
 
     .window-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #94a3b8;
-      text-transform: uppercase;
+      font-size: 0.55rem;
+      color: var(--text-muted);
       letter-spacing: 0.05em;
     }
 
-    /* Enlace que envuelve la tarjeta */
     .project-link {
       text-decoration: none;
       color: inherit;
@@ -216,8 +249,9 @@
 
     .image-container {
       width: 100%;
-      height: 200px;
-      background: #f1f5f9;
+      height: 180px;
+      background: #0f1017;
+      border-bottom: 4px solid var(--border-dark);
       position: relative;
       overflow: hidden;
     }
@@ -226,162 +260,155 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .project-window:hover .image-container img {
-      transform: scale(1.03);
+      display: block;
     }
 
     .project-body {
-      padding: 1.25rem 1.25rem 1.5rem;
+      padding: 1.2rem;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      gap: 0.75rem;
     }
 
     .project-body h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: #ffffff;
+      text-shadow: 2px 2px 0px #000;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .project-body h3::after {
-      content: "↗";
-      font-size: 1.1rem;
+      content: "►";
+      font-size: 0.7rem;
       color: var(--accent);
-      transition: transform 0.2s;
-    }
-
-    .project-window:hover .project-body h3::after {
-      transform: translate(2px, -2px);
     }
 
     .project-body p {
-      font-size: 0.9rem;
+      font-size: 0.6rem;
+      line-height: 1.6;
       color: var(--text-muted);
-      margin-bottom: 1rem;
       flex-grow: 1;
     }
 
     .tag-badge {
       display: inline-block;
       align-self: flex-start;
-      background: #eff6ff;
-      color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.6rem;
-      border-radius: 20px;
+      background: #181425;
+      color: var(--accent-cyan);
+      border: 2px solid var(--border-dark);
+      font-size: 0.55rem;
+      padding: 0.35rem 0.6rem;
+      box-shadow: 2px 2px 0px #000;
     }
 
-    /* Botón eliminar (visible solo en modo admin) */
+    /* Botón Eliminar en Modo Gestor */
     .delete-btn {
       position: absolute;
       top: 6px;
-      right: 8px;
-      background: #fee2e2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      padding: 2px 6px;
+      right: 6px;
+      background: var(--danger);
+      color: white;
+      border: 2px solid var(--border-dark);
+      font-family: inherit;
+      font-size: 0.55rem;
+      padding: 3px 6px;
       cursor: pointer;
       display: none;
       z-index: 10;
+      box-shadow: 2px 2px 0px #000;
+    }
+
+    .delete-btn:hover {
+      background: #ff3377;
     }
 
     .admin-mode .delete-btn {
       display: block;
     }
 
-    /* Empty state */
     .empty-state {
       grid-column: 1 / -1;
       text-align: center;
-      padding: 4rem;
+      padding: 3rem;
       color: var(--text-muted);
-      border: 2px dashed var(--border);
-      border-radius: 12px;
+      border: 4px dashed var(--border-dark);
+      background: var(--surface);
+      font-size: 0.7rem;
+      line-height: 2;
     }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado -->
   <header>
     <div class="header-info">
-      <h1>Portafolio Martín</h1>
-      <p>Explora mis proyectos activos y aplicaciones interactivas.</p>
+      <h1>PORTAFOLIO MARTÍN</h1>
+      <p>★ EXPLORA MIS PROYECTOS Y APLICACIONES ★</p>
     </div>
-    <button class="admin-toggle-btn" id="adminToggle" title="Atajo: Alt + A">⚙ Modo Gestor</button>
+    <button class="admin-toggle-btn" id="adminToggle" title="Atajo: Alt + A">[⚙] MODO GESTOR</button>
   </header>
 
-  <!-- Panel de Gestión (Para que tú agregues los links e imágenes) -->
   <section class="admin-panel" id="adminPanel">
-    <h2>+ Agregar Nuevo Proyecto Activo</h2>
+    <h2>[+] AÑADIR NUEVO CARTUCHO</h2>
     <form class="admin-form" id="projectForm">
       <div class="form-group">
         <label for="pTitle">Título del Proyecto</label>
-        <input type="text" id="pTitle" placeholder="Ej. Sonificador Espectral NASA" required>
+        <input type="text" id="pTitle" placeholder="Ej. Sonificador Espectral" required>
       </div>
 
       <div class="form-group">
-        <label for="pLink">Enlace del Proyecto (URL)</label>
+        <label for="pLink">URL del Proyecto</label>
         <input type="url" id="pLink" placeholder="https://mi-proyecto.app" required>
       </div>
 
       <div class="form-group">
-        <label for="pImg">URL de la Imagen / Captura</label>
+        <label for="pImg">URL de la Captura</label>
         <input type="url" id="pImg" placeholder="https://images.unsplash.com/..." required>
       </div>
 
       <div class="form-group">
-        <label for="pTag">Categoría / Etiqueta</label>
-        <input type="text" id="pTag" placeholder="Ej. Web Audio, IA, Web App">
+        <label for="pTag">Categoría / ROM</label>
+        <input type="text" id="pTag" placeholder="Ej. Web Audio, IA">
       </div>
 
       <div class="form-group" style="grid-column: 1 / -1;">
         <label for="pDesc">Descripción Corta</label>
-        <textarea id="pDesc" placeholder="Breve explicación de lo que hace el proyecto..."></textarea>
+        <textarea id="pDesc" placeholder="Breve historia del proyecto..."></textarea>
       </div>
 
-      <button type="submit" class="btn-submit">Guardar y Publicar</button>
+      <button type="submit" class="btn-submit">GUARDAR CARTUCHO</button>
     </form>
   </section>
 
-  <!-- Galería de Proyectos (Ventanas) -->
   <main>
     <div class="projects-grid" id="projectsContainer">
-      <!-- Se cargarán dinámicamente mediante JS -->
-    </div>
+      </div>
   </main>
 
   <script>
-    // Proyectos iniciales por defecto (puedes editarlos o borrarlos desde el modo gestor)
     const DEFAULT_PROJECTS = [
       {
         id: 1,
-        title: "Sonificador de Imágenes",
+        title: "Sonificador Galáctico",
         url: "https://ejemplo.com/sonificador",
         img: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
-        desc: "Sintetizador web que traduce imágenes astronómicas a frecuencias y timbres de órgano estilo NASA.",
-        tag: "Web Audio API"
+        desc: "Sintetizador web que transforma capturas del espacio profundo a frecuencias de órgano retro.",
+        tag: "Web Audio"
       },
       {
         id: 2,
-        title: "Explorador Planetario 3D",
+        title: "Planetario 3D 8-Bit",
         url: "https://ejemplo.com/planetas",
         img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80",
-        desc: "Visualizador orbital interactivo con texturas de alta definición y física gravitacional.",
-        tag: "WebGL / Three.js"
+        desc: "Explorador orbital tridimensional con física gravitacional y visuales computarizados.",
+        tag: "WebGL"
       }
     ];
 
-    // Carga desde localStorage o asigna los predeterminados
     let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects')) || DEFAULT_PROJECTS;
 
     const projectsContainer = document.getElementById('projectsContainer');
@@ -391,15 +418,14 @@
 
     let isAdmin = false;
 
-    // Renderizar tarjetas
     function renderProjects() {
       projectsContainer.innerHTML = '';
 
       if (projects.length === 0) {
         projectsContainer.innerHTML = `
           <div class="empty-state">
-            <p>No hay proyectos activos todavía.</p>
-            <small>Haz clic en "Modo Gestor" para añadir tu primer enlace.</small>
+            <p>NO HAY PROYECTOS INSERTADOS.</p>
+            <small>ABRE EL GESTOR PARA INSERTAR UN CARTUCHO.</small>
           </div>
         `;
         return;
@@ -416,19 +442,19 @@
               <div class="dot yellow"></div>
               <div class="dot green"></div>
             </div>
-            <span class="window-title">Activo</span>
+            <span class="window-title">READY - ROM</span>
           </div>
 
-          <button class="delete-btn" onclick="deleteProject(${p.id})">Eliminar</button>
+          <button class="delete-btn" onclick="deleteProject(${p.id})">BORRAR</button>
 
           <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="project-link">
             <div class="image-container">
-              <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=Sin+Imagen'">
+              <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/181425/ffcc00?text=NO+SIGNAL'">
             </div>
             <div class="project-body">
               <h3>${p.title}</h3>
-              <p>${p.desc || 'Haz clic para abrir el proyecto en una nueva ventana.'}</p>
-              ${p.tag ? `<span class="tag-badge">${p.tag}</span>` : ''}
+              <p>${p.desc || 'Presiona botón para explorar el sistema.'}</p>
+              ${p.tag ? `<span class="tag-badge">[${p.tag}]</span>` : ''}
             </div>
           </a>
         `;
@@ -437,24 +463,21 @@
       });
     }
 
-    // Toggle modo Admin
     function toggleAdmin() {
       isAdmin = !isAdmin;
       adminPanel.classList.toggle('active', isAdmin);
       document.body.classList.toggle('admin-mode', isAdmin);
-      adminToggle.textContent = isAdmin ? '✕ Cerrar Gestor' : '⚙ Modo Gestor';
+      adminToggle.textContent = isAdmin ? '[✕] CERRAR' : '[⚙] MODO GESTOR';
     }
 
     adminToggle.addEventListener('click', toggleAdmin);
 
-    // Atajo de teclado: Alt + A para abrir/cerrar panel
     window.addEventListener('keydown', (e) => {
       if (e.altKey && (e.key === 'a' || e.key === 'A')) {
         toggleAdmin();
       }
     });
 
-    // Guardar nuevo proyecto
     projectForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
@@ -474,16 +497,14 @@
       projectForm.reset();
     });
 
-    // Borrar proyecto
     window.deleteProject = function(id) {
-      if (confirm('¿Seguro que deseas eliminar este proyecto?')) {
+      if (confirm('¿BORRAR ESTE CARTUCHO?')) {
         projects = projects.filter(p => p.id !== id);
         localStorage.setItem('martin_portfolio_projects', JSON.stringify(projects));
         renderProjects();
       }
     };
 
-    // Inicializar
     renderProjects();
   </script>
 </body>
