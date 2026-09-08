@@ -38,7 +38,6 @@
       color: var(--text-main);
       line-height: 1.8;
       padding: 0 1.5rem 5rem;
-      /* Efecto sutil de fondo CRT/píxel */
       background-image: 
         radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
       background-size: 24px 24px;
@@ -96,7 +95,7 @@
       box-shadow: none;
     }
 
-    /* Panel Admin Estilo Consola/Inventario */
+    /* Panel Admin */
     .admin-panel {
       max-width: 1100px;
       margin: 2rem auto;
@@ -158,18 +157,24 @@
       min-height: 50px;
     }
 
+    .admin-form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
     .btn-submit {
       font-family: inherit;
-      grid-column: 1 / -1;
       background: var(--accent);
       color: #000;
       border: 3px solid var(--border-dark);
-      padding: 0.8rem;
+      padding: 0.8rem 1.2rem;
       font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: var(--pixel-shadow);
-      justify-self: end;
     }
 
     .btn-submit:hover {
@@ -183,7 +188,24 @@
       box-shadow: none;
     }
 
-    /* Galería de Proyectos / Cajas de Juego */
+    .btn-cancel {
+      font-family: inherit;
+      background: #444;
+      color: #fff;
+      border: 3px solid var(--border-dark);
+      padding: 0.8rem 1.2rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: var(--pixel-shadow);
+      display: none;
+    }
+
+    .btn-cancel:hover {
+      background: #666;
+    }
+
+    /* Galería de Proyectos */
     main {
       max-width: 1100px;
       margin: 3rem auto 0;
@@ -209,7 +231,6 @@
       box-shadow: var(--pixel-shadow-lg);
     }
 
-    /* Ventana tipo Retro OS */
     .window-header {
       background: var(--surface);
       border-bottom: 4px solid var(--border-dark);
@@ -305,30 +326,38 @@
       box-shadow: 2px 2px 0px #000;
     }
 
-    /* Botón Eliminar en Modo Gestor */
-    .delete-btn {
+    /* Barra de herramientas Admin por Tarjeta */
+    .card-admin-toolbar {
+      display: none;
       position: absolute;
       top: 6px;
       right: 6px;
-      background: var(--danger);
-      color: white;
-      border: 2px solid var(--border-dark);
-      font-family: inherit;
-      font-size: 0.55rem;
-      padding: 3px 6px;
-      cursor: pointer;
-      display: none;
       z-index: 10;
+      gap: 4px;
+    }
+
+    .admin-mode .card-admin-toolbar {
+      display: flex;
+    }
+
+    .tool-btn {
+      font-family: inherit;
+      font-size: 0.5rem;
+      padding: 3px 5px;
+      cursor: pointer;
+      border: 2px solid var(--border-dark);
       box-shadow: 2px 2px 0px #000;
+      color: #fff;
     }
 
-    .delete-btn:hover {
-      background: #ff3377;
-    }
+    .tool-btn.btn-del { background: var(--danger); }
+    .tool-btn.btn-del:hover { background: #ff3377; }
+    
+    .tool-btn.btn-edit { background: var(--accent-cyan); color: #000; }
+    .tool-btn.btn-edit:hover { background: #55f5ff; }
 
-    .admin-mode .delete-btn {
-      display: block;
-    }
+    .tool-btn.btn-move { background: var(--surface); color: var(--accent); }
+    .tool-btn.btn-move:hover { background: #3a4466; }
 
     .empty-state {
       grid-column: 1 / -1;
@@ -353,8 +382,10 @@
   </header>
 
   <section class="admin-panel" id="adminPanel">
-    <h2>[+] AÑADIR NUEVO CARTUCHO</h2>
+    <h2 id="formTitle">[+] AÑADIR NUEVO CARTUCHO</h2>
     <form class="admin-form" id="projectForm">
+      <input type="hidden" id="editingId" value="">
+
       <div class="form-group">
         <label for="pTitle">Título del Proyecto</label>
         <input type="text" id="pTitle" placeholder="Ej. Sonificador Espectral" required>
@@ -372,7 +403,7 @@
 
       <div class="form-group">
         <label for="pTag">Categoría / ROM</label>
-        <input type="text" id="pTag" placeholder="Ej. Web Audio, IA">
+        <input type="text" id="pTag" placeholder="Ej. Web Audio, Juego">
       </div>
 
       <div class="form-group" style="grid-column: 1 / -1;">
@@ -380,43 +411,86 @@
         <textarea id="pDesc" placeholder="Breve historia del proyecto..."></textarea>
       </div>
 
-      <button type="submit" class="btn-submit">GUARDAR CARTUCHO</button>
+      <div class="admin-form-actions">
+        <button type="button" class="btn-cancel" id="cancelEditBtn" onclick="resetFormState()">CANCELAR EDICIÓN</button>
+        <button type="submit" class="btn-submit" id="submitBtn">GUARDAR CARTUCHO</button>
+      </div>
     </form>
   </section>
 
   <main>
-    <div class="projects-grid" id="projectsContainer">
-      </div>
+    <div class="projects-grid" id="projectsContainer"></div>
   </main>
 
   <script>
+    // 6 PROYECTOS DEFAULT PÚBLICOS
     const DEFAULT_PROJECTS = [
       {
         id: 1,
-        title: "Sonificador Galáctico",
-        url: "https://ejemplo.com/sonificador",
-        img: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
-        desc: "Sintetizador web que transforma capturas del espacio profundo a frecuencias de órgano retro.",
-        tag: "Web Audio"
+        title: "Arcade Game",
+        url: "https://martindonoso2005-cell.github.io/juego/",
+        img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
+        desc: "Juego retro interactivo desarrollado en entorno web.",
+        tag: "Game Dev"
       },
       {
         id: 2,
-        title: "Planetario 3D 8-Bit",
-        url: "https://ejemplo.com/planetas",
+        title: "Adivinar Sonido",
+        url: "https://martindonoso2005-cell.github.io/Juego-Adivinar-Sonido/",
+        img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+        desc: "Desafío auditivo interactivo para ejercitar el oído y reconocer pistas de audio.",
+        tag: "Audio Game"
+      },
+      {
+        id: 3,
+        title: "Sonificador de Datos",
+        url: "https://martindonoso2005-cell.github.io/Sonficador-de-datos/",
+        img: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
+        desc: "Transformador de secuencias de datos cuantitativos a espectros audibles.",
+        tag: "Data Science"
+      },
+      {
+        id: 4,
+        title: "Sintetizador Web",
+        url: "https://martindonoso2005-cell.github.io/sintetizador/",
+        img: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80",
+        desc: "Instrumento musical digital con modulación de ondas y frecuencias en tiempo real.",
+        tag: "Web Audio"
+      },
+      {
+        id: 5,
+        title: "Interfaz Electrodoméstico",
+        url: "https://martindonoso2005-cell.github.io/Interfaz-electrodomestico/",
+        img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+        desc: "Diseño y simulación de interfaz de usuario digital para sistemas del hogar.",
+        tag: "UI/UX"
+      },
+      {
+        id: 6,
+        title: "Sonificador 2.0",
+        url: "https://martindonoso2005-cell.github.io/Sonificador-2.0/",
         img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80",
-        desc: "Explorador orbital tridimensional con física gravitacional y visuales computarizados.",
-        tag: "WebGL"
+        desc: "Evolución del motor de sonificación con parámetros sonoros avanzados y filtros.",
+        tag: "DSP Audio"
       }
     ];
 
-    let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects')) || DEFAULT_PROJECTS;
+    let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects_v2')) || DEFAULT_PROJECTS;
 
     const projectsContainer = document.getElementById('projectsContainer');
     const adminToggle = document.getElementById('adminToggle');
     const adminPanel = document.getElementById('adminPanel');
     const projectForm = document.getElementById('projectForm');
+    const formTitle = document.getElementById('formTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const editingId = document.getElementById('editingId');
 
     let isAdmin = false;
+
+    function saveState() {
+      localStorage.setItem('martin_portfolio_projects_v2', JSON.stringify(projects));
+    }
 
     function renderProjects() {
       projectsContainer.innerHTML = '';
@@ -431,7 +505,7 @@
         return;
       }
 
-      projects.forEach(p => {
+      projects.forEach((p, index) => {
         const card = document.createElement('div');
         card.className = 'project-window';
         
@@ -442,10 +516,15 @@
               <div class="dot yellow"></div>
               <div class="dot green"></div>
             </div>
-            <span class="window-title">READY - ROM</span>
+            <span class="window-title">ROM [0${index + 1}]</span>
           </div>
 
-          <button class="delete-btn" onclick="deleteProject(${p.id})">BORRAR</button>
+          <div class="card-admin-toolbar">
+            <button class="tool-btn btn-move" title="Mover a la izquierda" onclick="moveProject(${index}, -1)">◀</button>
+            <button class="tool-btn btn-move" title="Mover a la derecha" onclick="moveProject(${index}, 1)">▶</button>
+            <button class="tool-btn btn-edit" title="Editar proyecto" onclick="editProject(${p.id})">EDITAR</button>
+            <button class="tool-btn btn-del" title="Eliminar proyecto" onclick="deleteProject(${p.id})">BORRAR</button>
+          </div>
 
           <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="project-link">
             <div class="image-container">
@@ -468,6 +547,7 @@
       adminPanel.classList.toggle('active', isAdmin);
       document.body.classList.toggle('admin-mode', isAdmin);
       adminToggle.textContent = isAdmin ? '[✕] CERRAR' : '[⚙] MODO GESTOR';
+      if (!isAdmin) resetFormState();
     }
 
     adminToggle.addEventListener('click', toggleAdmin);
@@ -478,11 +558,12 @@
       }
     });
 
+    // Guardar (Nuevo o Editado)
     projectForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const newProject = {
-        id: Date.now(),
+      const currentId = editingId.value;
+      const projectData = {
         title: document.getElementById('pTitle').value.trim(),
         url: document.getElementById('pLink').value.trim(),
         img: document.getElementById('pImg').value.trim(),
@@ -490,18 +571,72 @@
         desc: document.getElementById('pDesc').value.trim()
       };
 
-      projects.unshift(newProject);
-      localStorage.setItem('martin_portfolio_projects', JSON.stringify(projects));
+      if (currentId) {
+        // Actualizar proyecto existente
+        const targetIndex = projects.findIndex(p => p.id == currentId);
+        if (targetIndex !== -1) {
+          projects[targetIndex] = { ...projects[targetIndex], ...projectData };
+        }
+      } else {
+        // Añadir nuevo cartucho al inicio
+        projects.unshift({
+          id: Date.now(),
+          ...projectData
+        });
+      }
 
+      saveState();
       renderProjects();
-      projectForm.reset();
+      resetFormState();
     });
 
+    // Iniciar edición de proyecto
+    window.editProject = function(id) {
+      const p = projects.find(item => item.id === id);
+      if (!p) return;
+
+      editingId.value = p.id;
+      document.getElementById('pTitle').value = p.title;
+      document.getElementById('pLink').value = p.url;
+      document.getElementById('pImg').value = p.img;
+      document.getElementById('pTag').value = p.tag || '';
+      document.getElementById('pDesc').value = p.desc || '';
+
+      formTitle.textContent = `[✎] EDITANDO: ${p.title.toUpperCase()}`;
+      submitBtn.textContent = 'ACTUALIZAR CARTUCHO';
+      cancelEditBtn.style.display = 'inline-block';
+
+      if (!isAdmin) toggleAdmin();
+      adminPanel.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.resetFormState = function() {
+      projectForm.reset();
+      editingId.value = '';
+      formTitle.textContent = '[+] AÑADIR NUEVO CARTUCHO';
+      submitBtn.textContent = 'GUARDAR CARTUCHO';
+      cancelEditBtn.style.display = 'none';
+    };
+
+    // Reordenar tarjetas
+    window.moveProject = function(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+      const item = projects.splice(index, 1)[0];
+      projects.splice(targetIndex, 0, item);
+
+      saveState();
+      renderProjects();
+    };
+
+    // Borrar proyecto
     window.deleteProject = function(id) {
-      if (confirm('¿BORRAR ESTE CARTUCHO?')) {
+      if (confirm('¿BORRAR ESTE CARTUCHO DEL SISTEMA?')) {
         projects = projects.filter(p => p.id !== id);
-        localStorage.setItem('martin_portfolio_projects', JSON.stringify(projects));
+        saveState();
         renderProjects();
+        if (editingId.value == id) resetFormState();
       }
     };
 
