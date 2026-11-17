@@ -93,9 +93,12 @@
     avisos.forEach(f => f(n));
   }
 
+  // Boca hablando: la conversación de la página la abre y la cierra (0 = cerrada, 1 = muy abierta)
+  let habla = 0;
   window.Ojos = {
     crear, hacer, EXPRESIONES,
     alCambiar: f => avisos.push(f),
+    hablar: nivel => { habla = Math.max(0, Math.min(1, nivel)); if (habla > 0) ultimoMov = performance.now(); },
   };
 
   addEventListener("pointermove", e => {
@@ -170,7 +173,8 @@
         v.incl[i] = mezclar(v.incl[i], (o.incl || [0, 0])[i], .2);
       }
       v.pupila = mezclar(v.pupila, o.pupila || 1, .2);
-      const bo = o.boca || { c: 6, a: 0, w: 46 };
+      let bo = o.boca || { c: 6, a: 0, w: 46 };
+      if (habla > 0.02) bo = { ...bo, a: Math.max(bo.a, 3 + habla * 22), w: Math.max(bo.w, 40 + habla * 14) };
       for (const kk of ["c", "a", "w"]) v.boca[kk] = mezclar(v.boca[kk], bo[kk], .25);
       v.boca.dx = mezclar(v.boca.dx, bo.dx || 0, .25);
       v.boca.onda = bo.onda || 0;
