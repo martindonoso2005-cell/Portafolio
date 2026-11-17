@@ -423,8 +423,17 @@
   </main>
 
   <script>
-    // 6 PROYECTOS DEFAULT PÚBLICOS
+    // PROYECTOS PÚBLICOS: esta lista es lo único que ven los visitantes.
+    // Lo que se agrega con el MODO GESTOR queda solo en tu navegador.
     const DEFAULT_PROJECTS = [
+      {
+        id: 7,
+        title: "Robot Face",
+        url: "https://portafolio.insta3d.cl/universidad/robotface.html",
+        img: "img/robotface.jpg",
+        desc: "Cabeza robótica con ojos animatrónicos impresos en 3D, caja de corte láser y Arduino. Sigue rostros con la cámara y conversa por voz.",
+        tag: "Robótica"
+      },
       {
         id: 1,
         title: "Arcade Game",
@@ -476,6 +485,10 @@
     ];
 
     let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects_v2')) || DEFAULT_PROJECTS;
+    // Si el navegador tiene una lista guardada antigua, suma los proyectos nuevos de la lista pública.
+    DEFAULT_PROJECTS.forEach(d => {
+      if (!projects.some(p => p.id === d.id)) projects.unshift(d);
+    });
 
     const projectsContainer = document.getElementById('projectsContainer');
     const adminToggle = document.getElementById('adminToggle');
