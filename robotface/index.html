@@ -74,7 +74,25 @@
     .descargas { display: flex; flex-wrap: wrap; gap: .8rem; }
 
     /* Conversación */
-    .charla { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.5rem; align-items: start; }
+    .panel { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+    .pantalla { background: #0f1017; border-right: 4px solid var(--border); display: grid; align-content: start; }
+    .pantalla svg { width: 100%; height: auto; display: block; }
+    .notebook { position: relative; margin: 0 6% 6%; border: 6px solid #2a2a30; border-radius: 10px; background: #000; overflow: hidden; }
+    #boca { display: block; width: 100%; aspect-ratio: 16 / 7; max-width: 100%; }
+    .modo { position: absolute; top: .6rem; left: .7rem; display: flex; gap: .5rem; align-items: center; font-family: var(--pixel); font-size: .45rem; color: var(--muted); }
+    .modo i { width: 10px; height: 10px; border-radius: 50%; background: #55534a; display: block; }
+    .subs { padding: 0 .8rem .7rem; text-align: center; min-height: 3.2em; }
+    .sub-tu { color: var(--cyan); font-size: 1.05rem; }
+    .sub-robot { color: var(--text); font-size: 1.25rem; }
+    .controles { padding: 1.2rem; display: grid; gap: .9rem; align-content: start; }
+    .btn-grande { font-size: .65rem; padding: .9rem 1.1rem; }
+    .luz { width: 14px; height: 14px; border: 2px solid #000; background: #55534a; display: inline-block; }
+    .luz.encendido { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .mic { display: grid; gap: .35rem; }
+    .mic-barra { height: 12px; background: #10121c; border: 2px solid var(--border); }
+    #mic-nivel { height: 100%; width: 0; background: #6e6e7d; }
+    #mic-nivel.voz { background: #5affaa; }
+    @media (max-width: 860px) { .panel { grid-template-columns: minmax(0, 1fr); } .pantalla { border-right: 0; border-bottom: 4px solid var(--border); } }
     .chico { font-size: 1.05rem; }
     .estado-usb { font-family: var(--pixel); font-size: .5rem; color: var(--muted); line-height: 1.8; }
     .estado-usb.ok { color: var(--green); }
@@ -200,21 +218,32 @@
 
     <section id="hablar">
       <h2>HABLA CON ROBOT FACE</h2>
-      <div class="charla">
-        <div class="window ojos">
-          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">ROBOT FACE · EN VIVO</span></div>
-          <svg id="ojos-charla" role="img" aria-label="Ojos y boca del robot que hablan"></svg>
-          <div class="window-body">
-            <button class="btn" id="usb-btn" type="button">CONECTAR OJOS (USB)</button>
-            <span class="estado-usb" id="usb-estado">○ OJOS REALES SIN CONECTAR</span>
-            <p class="muted chico">Con el robot conectado por USB, los ojos reales siguen tu mouse y hacen cada emoción. Cierra antes el panel local (pagina.bat), porque usa el mismo puerto.</p>
+      <div class="window">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">PANEL EN VIVO</span></div>
+        <div class="panel">
+          <div class="pantalla">
+            <svg id="ojos-charla" role="img" aria-label="Ojos del robot"></svg>
+            <div class="notebook">
+              <canvas id="boca" aria-label="Boca del robot en la pantalla del notebook"></canvas>
+              <div class="modo"><i id="modo-luz"></i><span id="modo-texto">APAGADO</span></div>
+              <div class="subs" aria-live="polite">
+                <p class="sub-tu" id="sub-tu"></p>
+                <p class="sub-robot" id="sub-robot"></p>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="window">
-          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">CONVERSACIÓN</span></div>
-          <div class="window-body">
+          <div class="controles">
+            <div class="fila-form-in">
+              <span class="luz" id="luz-general"></span>
+              <button class="btn btn-play btn-grande" id="btn-encender" type="button" disabled>ENCENDER ROBOT</button>
+              <button class="btn" id="btn-callar" type="button">CALLAR</button>
+            </div>
+            <div class="mic"><span class="estado-usb">MICRÓFONO</span><div class="mic-barra"><div id="mic-nivel"></div></div></div>
+            <p class="aviso" id="aviso"></p>
+            <p class="chico muted">Enciéndelo y háblale en voz alta: te escucha, piensa y te responde hablando. No hay que tocar nada entre frase y frase. Si nadie se mueve, se duerme; háblale para despertarlo.</p>
+
             <form id="clave-form" class="fila-form">
-              <label for="clave" class="chico">Para conversar, pega una clave de Anthropic. Se guarda solo en este navegador y no se publica.</label>
+              <label for="clave" class="chico">Para que converse, pega una clave de Anthropic. Se guarda solo en este navegador y no se publica.</label>
               <div class="fila-form-in">
                 <input id="clave" type="password" autocomplete="off" placeholder="sk-ant-..." required>
                 <button class="btn" type="submit">GUARDAR</button>
@@ -224,13 +253,12 @@
               <span class="estado-usb ok">● CLAVE GUARDADA EN ESTE NAVEGADOR</span>
               <button class="btn" id="clave-borrar" type="button">BORRAR CLAVE</button>
             </div>
-            <div class="chat" id="chat" aria-live="polite"></div>
-            <p class="aviso" id="chat-aviso"></p>
-            <button class="btn btn-play btn-hablar" id="hablar-btn" type="button" disabled>● MANTÉN UNA CHARLA: TOCA Y HABLA</button>
-            <form id="escribir-form" class="fila-form-in">
-              <input id="escribir" type="text" autocomplete="off" placeholder="O escríbele algo…">
-              <button class="btn" type="submit">ENVIAR</button>
-            </form>
+
+            <div class="fila-form-in">
+              <button class="btn" id="usb-btn" type="button">CONECTAR OJOS (USB)</button>
+              <span class="estado-usb" id="usb-estado">○ OJOS REALES SIN CONECTAR</span>
+            </div>
+            <p class="muted chico">Con el robot conectado por USB, los ojos reales siguen tu mouse y hacen cada emoción. Cierra antes el panel local (pagina.bat), porque usa el mismo puerto.</p>
           </div>
         </div>
       </div>
@@ -424,12 +452,14 @@ Micrófono ─► hablar.py (Whisper · Claude · voz · boca) ◄──► API 
     </footer>
   </div>
 
-  <script src="ojos.js"></script>
+  <script src="ojos.js?v=3"></script>
   <script>
     (() => {
       const O = window.Ojos;
       O.crear(document.getElementById('ojos-portada'));
       O.crear(document.getElementById('ojos-charla'));
+      // En el panel solo van los ojos: la boca grande es la pantalla de abajo
+      document.getElementById('ojos-charla').setAttribute('viewBox', '0 30 480 168');
 
       const DESC = {
         1: 'Ojos muy abiertos', 2: 'Párpados pesados', 3: 'Párpados inclinados', 4: 'Mira de lado a lado',
@@ -463,6 +493,6 @@ Micrófono ─► hablar.py (Whisper · Claude · voz · boca) ◄──► API 
       });
     })();
   </script>
-  <script type="module" src="conversar.js"></script>
+  <script type="module" src="conversar.js?v=3"></script>
 </body>
 </html>
