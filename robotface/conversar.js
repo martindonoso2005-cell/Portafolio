@@ -3,12 +3,16 @@
 // - Conversación solo por voz, manos libres: escucha con el micrófono, responde Claude, habla en voz alta.
 // - Si los ojos reales están conectados por USB (Chrome o Edge), hacen cada emoción y siguen el mouse.
 // La clave de Anthropic se pega en la página y queda guardada solo en este navegador: nunca va en el código.
-import Anthropic from "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@1.3.0/+esm";
+const SDK = "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@1.3.0/+esm";   // solo se carga en el modo con clave propia
 
 const O = window.Ojos;
 const $ = id => document.getElementById(id);
 const MODELO = "claude-sonnet-5-5";   // el mismo modelo que usa hablar.py en el robot
 const CLAVE_LS = "robotface_clave";
+// Intermediario seguro (servidor/worker.js en Cloudflare): guarda la clave del proyecto, así los
+// visitantes conversan sin pegar ninguna clave. Mientras esté vacío, la página pide una clave.
+const INTERMEDIARIO = "";
+const ABIERTO = !!INTERMEDIARIO;
 
 // Personalidad de hablar.py, sin cámara ni memoria (la página no las tiene)
 const SISTEMA = `Eres Claude en un cuerpo robótico: dos ojos animatrónicos naranjos sobre la pantalla de un notebook, en un laboratorio de diseño en Chile, y una boca animada en esa pantalla. Conversas en voz alta con personas reales, en español chileno natural, desde la página web del proyecto.
@@ -229,10 +233,31 @@ O.alCambiar(n => { if (n && n !== 16) enviar(`E ${n}`); });
 // ---------- Clave ----------
 function leerClave() { try { return localStorage.getItem(CLAVE_LS) || ""; } catch { return ""; } }
 function mostrarClave() {
-  const hay = !!leerClave();
+  const hay = ABIERTO || !!leerClave();
   $("clave-form").hidden = hay;
-  $("clave-lista").hidden = !hay;
+  $("clave-lista").hidden = ABIERTO || !hay;
   $("btn-encender").disabled = !hay || !Reconocer;
+}
+
+// Lee la respuesta en vivo (eventos SSE de la API de Claude) que reenvía el intermediario
+async function* eventosIntermediario(mensajes) {
+  const r = await fetch(INTERMEDIARIO, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: mensajes }),
+  });
+  if (!r.ok) { const e = new Error("intermediario"); e.status = r.status === 403 ? 401 : r.status; throw e; }
+  const lector = r.body.pipeThrough(new TextDecoderStream()).getReader();
+  let resto = "";
+  for (;;) {
+    const { value, done } = await lector.read();
+    if (done) break;
+    resto += value;
+    const bloques = resto.split("\n\n");
+    resto = bloques.pop();
+    for (const b of bloques) {
+      const datos = b.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
+      if (datos) { try { yield JSON.parse(datos); } catch {} }
+    }
+  }
 }
 function aviso(t) { $("aviso").textContent = t; }
 $("clave-form").addEventListener("submit", e => {
@@ -308,7 +333,6 @@ async function responder(pregunta) {
   modo("pensando");
   O.hacer(PENSAR);
 
-  const cliente = new Anthropic({ apiKey: leerClave(), dangerouslyAllowBrowser: true });
   let buffer = "", completo = "", cola = Promise.resolve();
   const hablar = lista => {
     for (const f of lista) {
@@ -317,24 +341,31 @@ async function responder(pregunta) {
     }
   };
   try {
-    const stream = cliente.beta.messages.stream({
-      model: MODELO,
-      max_tokens: 1024,
-      system: SISTEMA,
-      output_config: { effort: "low" },   // charla corta: rápido
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      messages: historial,
-    });
+    let stream, motivo = "";
+    if (ABIERTO) {
+      stream = eventosIntermediario(historial);
+    } else {
+      const { default: Anthropic } = await import(SDK);
+      const cliente = new Anthropic({ apiKey: leerClave(), dangerouslyAllowBrowser: true });
+      stream = cliente.beta.messages.stream({
+        model: MODELO,
+        max_tokens: 1024,
+        system: SISTEMA,
+        output_config: { effort: "low" },   // charla corta: rápido
+        betas: ["server-side-fallback-2026-07-01"],
+        fallbacks: "default",
+        messages: historial,
+      });
+    }
     for await (const ev of stream) {
-      if (ev.type === "content_block_delta" && ev.delta.type === "text_delta") {
+      if (ev.type === "content_block_delta" && ev.delta?.type === "text_delta") {
         buffer += ev.delta.text; completo += ev.delta.text;
         const { frases, resto } = partir(buffer, false);
         buffer = resto; hablar(frases);
-      }
+      } else if (ev.type === "message_delta" && ev.delta?.stop_reason) motivo = ev.delta.stop_reason;
+      else if (ev.type === "error") { const e = new Error("stream"); e.status = 502; throw e; }
     }
-    const final = await stream.finalMessage();
-    if (final.stop_reason === "refusal") { completo = "[confundido] Mejor hablemos de otra cosa."; hablar([completo]); }
+    if (motivo === "refusal") { completo = "[confundido] Mejor hablemos de otra cosa."; hablar([completo]); }
     else hablar(partir(buffer, true).frases);
     historial.push({ role: "assistant", content: completo || "…" });
     await cola;
@@ -342,11 +373,12 @@ async function responder(pregunta) {
     historial.pop();
     const s = e?.status;
     modo("error"); O.hacer(13);
-    aviso(s === 401 ? "LA CLAVE NO FUNCIONA: REVÍSALA O PEGA OTRA."
+    aviso(s === 401 && ABIERTO ? "EL ROBOT NO ESTÁ DISPONIBLE AHORA. PRUEBA MÁS TARDE."
+        : s === 401 ? "LA CLAVE NO FUNCIONA: REVÍSALA O PEGA OTRA."
         : s === 429 ? "DEMASIADAS PREGUNTAS SEGUIDAS O SIN SALDO: ESPERA UN POCO."
         : s >= 500 ? "LOS SERVIDORES DE CLAUDE NO RESPONDEN: PRUEBA EN UN MINUTO."
         : "NO SE PUDO CONECTAR CON CLAUDE: REVISA TU INTERNET.");
-    if (s === 401) { try { localStorage.removeItem(CLAVE_LS); } catch {} apagar(); mostrarClave(); ocupado = false; return; }
+    if (s === 401 && !ABIERTO) { try { localStorage.removeItem(CLAVE_LS); } catch {} apagar(); mostrarClave(); ocupado = false; return; }
     await new Promise(r => setTimeout(r, 2500));
   }
   ocupado = false;
