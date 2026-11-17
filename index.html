@@ -429,7 +429,7 @@
       {
         id: 7,
         title: "Robot Face",
-        url: "https://portafolio.insta3d.cl/universidad/robotface.html",
+        url: "robotface/",
         img: "img/robotface.jpg",
         desc: "Cabeza robótica con ojos animatrónicos impresos en 3D, caja de corte láser y Arduino. Sigue rostros con la cámara y conversa por voz.",
         tag: "Robótica"
@@ -487,7 +487,9 @@
     let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects_v2')) || DEFAULT_PROJECTS;
     // Si el navegador tiene una lista guardada antigua, suma los proyectos nuevos de la lista pública.
     DEFAULT_PROJECTS.forEach(d => {
-      if (!projects.some(p => p.id === d.id)) projects.unshift(d);
+      const guardado = projects.find(p => p.id === d.id);
+      if (!guardado) projects.unshift(d);
+      else if (d.id === 7) guardado.url = d.url; // Robot Face ahora tiene su propia página
     });
 
     const projectsContainer = document.getElementById('projectsContainer');

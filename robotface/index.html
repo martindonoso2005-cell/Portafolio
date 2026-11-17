@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robot Face - Retro Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    /* Misma paleta que el portafolio: cada sección es una "ventana" de juego */
+    :root {
+      --bg: #181425;
+      --surface: #262b44;
+      --card-bg: #3a4466;
+      --border: #000000;
+      --text: #f4f4f4;
+      --muted: #8b9bb4;
+      --accent: #ffcc00;
+      --cyan: #00f0ff;
+      --danger: #ff0055;
+      --green: #38b764;
+      --orange: #ff7a2a;
+      --shadow: 4px 4px 0 #000;
+      --shadow-lg: 6px 6px 0 #000;
+      --pixel: 'Press Start 2P', monospace;
+      --read: 'VT323', 'Courier New', monospace;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 0);
+      background-size: 24px 24px;
+      color: var(--text);
+      font: 22px/1.35 var(--read);
+      padding: 0 max(16px, env(safe-area-inset-right, 0px)) 5rem max(16px, env(safe-area-inset-left, 0px));
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--cyan); }
+    :focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+
+    /* Barra superior */
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1.5rem 0; border-bottom: 4px dashed var(--border); }
+    .btn {
+      font-family: var(--pixel); font-size: .6rem; text-decoration: none; color: var(--text);
+      background: var(--surface); border: 3px solid var(--border); box-shadow: var(--shadow);
+      padding: .6rem 1rem; cursor: pointer; display: inline-block;
+    }
+    .btn:hover { background: var(--accent); color: #000; transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+    .btn:active { transform: translate(2px,2px); box-shadow: none; }
+    .top .rom { font-family: var(--pixel); font-size: .55rem; color: var(--muted); }
+
+    /* Portada */
+    .hero { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 2.5rem; align-items: center; padding: 3rem 0 2rem; }
+    .eyebrow { font-family: var(--pixel); font-size: .55rem; color: var(--cyan); text-shadow: 2px 2px 0 #000; line-height: 1.8; }
+    .hero h1 { font-family: var(--pixel); font-size: clamp(1.8rem, 5vw, 3rem); color: var(--accent); text-shadow: 4px 4px 0 #000; margin: 1rem 0; line-height: 1.15; }
+    .hero p.lead { font-size: 1.6rem; max-width: 30ch; }
+    .autores { margin-top: 1.2rem; font-family: var(--pixel); font-size: .55rem; color: var(--muted); line-height: 2; }
+
+    /* Ventanas */
+    .window { background: var(--card-bg); border: 4px solid var(--border); box-shadow: var(--shadow); min-width: 0; }
+    .window-header { background: var(--surface); border-bottom: 4px solid var(--border); padding: .55rem .8rem; display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+    .dots { display: flex; gap: 5px; }
+    .dots i { width: 8px; height: 8px; border: 1px solid #000; }
+    .dots i:nth-child(1) { background: var(--danger); } .dots i:nth-child(2) { background: var(--accent); } .dots i:nth-child(3) { background: var(--green); }
+    .window-title { font-family: var(--pixel); font-size: .5rem; color: var(--muted); }
+    .window-body { padding: 1.2rem; display: grid; gap: .9rem; }
+
+    /* Ojos interactivos */
+    .ojos svg { width: 100%; height: auto; background: #0f1017; border-bottom: 4px solid var(--border); display: block; }
+    .estado { font-family: var(--pixel); font-size: .55rem; color: var(--green); }
+    .fichas { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .ficha, .expr {
+      font-family: var(--pixel); font-size: .5rem; color: var(--text); background: var(--bg);
+      border: 2px solid var(--border); box-shadow: 2px 2px 0 #000; padding: .45rem .6rem; cursor: pointer;
+    }
+    .ficha:hover, .expr:hover { background: var(--surface); color: var(--accent); }
+    .ficha.activa, .expr.activa { background: var(--accent); color: #000; }
+
+    /* Secciones */
+    section { padding: 2.5rem 0 1rem; display: grid; gap: 1.5rem; }
+    h2 { font-family: var(--pixel); font-size: 1rem; color: var(--accent); text-shadow: 3px 3px 0 #000; display: flex; gap: .8rem; align-items: center; }
+    h2::before { content: "►"; color: var(--cyan); font-size: .7rem; }
+    h3 { font-family: var(--pixel); font-size: .65rem; color: var(--cyan); line-height: 1.6; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1.5rem; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.5rem; }
+    .pregunta { font-family: var(--pixel); font-size: .8rem; line-height: 1.9; color: var(--text); }
+    .pregunta em { font-style: normal; color: var(--accent); }
+    ul.lista { list-style: none; display: grid; gap: .5rem; }
+    ul.lista li { padding-left: 1.4rem; position: relative; }
+    ul.lista li::before { content: "■"; position: absolute; left: 0; color: var(--orange); font-size: .9rem; top: .15rem; }
+    .muted { color: var(--muted); }
+
+    /* Estados del ciclo de vida: es una secuencia real */
+    .ciclo { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    .ciclo span { font-family: var(--pixel); font-size: .5rem; background: var(--bg); border: 2px solid var(--border); padding: .5rem .6rem; box-shadow: 2px 2px 0 #000; }
+    .ciclo b { color: var(--accent); font-family: var(--pixel); font-size: .5rem; }
+
+    .exprs { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .5rem; }
+    .expr { text-align: left; line-height: 1.6; }
+    .expr small { color: var(--muted); display: block; }
+    .expr.activa small { color: #000; }
+
+    pre.diagrama { font: 18px/1.3 var(--read); color: var(--green); background: #0f1017; border: 3px solid var(--border); padding: 1rem; overflow-x: auto; white-space: pre; }
+
+    .iteraciones { list-style: none; display: grid; gap: .8rem; counter-reset: it; }
+    .iteraciones li { display: grid; grid-template-columns: auto minmax(0,1fr); gap: .8rem; align-items: start; }
+    .iteraciones li::before { counter-increment: it; content: "LV" counter(it); font-family: var(--pixel); font-size: .5rem; background: var(--bg); border: 2px solid var(--border); padding: .4rem; color: var(--cyan); }
+    .iteraciones li.ok::before { background: var(--green); color: #000; }
+    .iteraciones .tag { font-family: var(--pixel); font-size: .45rem; color: var(--danger); }
+    .iteraciones li.ok .tag { color: var(--green); }
+
+    /* Galería */
+    .galeria { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.2rem; }
+    .galeria figure { background: var(--card-bg); border: 4px solid var(--border); box-shadow: var(--shadow); }
+    .galeria img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-bottom: 4px solid var(--border); background: #0f1017; }
+    .galeria figcaption { font-family: var(--pixel); font-size: .45rem; padding: .6rem; line-height: 1.7; color: var(--muted); }
+    .galeria figure.contain img { object-fit: contain; background: #f4f4f4; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip { font-family: var(--pixel); font-size: .45rem; background: var(--bg); color: var(--cyan); border: 2px solid var(--border); box-shadow: 2px 2px 0 #000; padding: .4rem .55rem; }
+
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 4px dashed var(--border); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    footer p { font-family: var(--pixel); font-size: .45rem; color: var(--muted); line-height: 2; }
+
+    @media (max-width: 860px) {
+      .hero, .grid2 { grid-template-columns: minmax(0,1fr); }
+      .grid3, .galeria { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .exprs { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 520px) {
+      .grid3, .galeria { grid-template-columns: minmax(0,1fr); }
+      body { font-size: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .btn:hover { transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="btn" href="../">◀ VOLVER AL PORTAFOLIO</a>
+      <span class="rom">ROM [ROBOT FACE] · 2026</span>
+    </header>
+
+    <div class="hero">
+      <div>
+        <p class="eyebrow">★ TALLER DE INTERFACES · INTERFAZ FÍSICA CON IA ★</p>
+        <h1>ROBOT FACE</h1>
+        <p class="lead">Una IA que te mira de vuelta. Ojos animatrónicos sobre un notebook que conversan por voz con Claude y expresan emociones con los párpados.</p>
+        <p class="autores">MARTIN DONOSO · LUIS-FELIPE BENÍTEZ<br>UAI · DESIGNLAB · 2026</p>
+      </div>
+      <div class="window ojos">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">DEMO · MUEVE EL MOUSE</span></div>
+        <svg id="ojos-portada" role="img" aria-label="Ojos animados del robot que siguen el cursor"></svg>
+        <div class="window-body">
+          <span class="estado" id="estado">● MIRÁNDOTE</span>
+          <div class="fichas" id="fichas"></div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="window">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">PROBLEMA</span></div>
+        <div class="window-body">
+          <p class="pregunta">Conversar con una IA es mirar una pantalla. <em>¿Qué pasa si la IA te mira de vuelta?</em></p>
+          <p>Diseñamos la interacción completa: un ciclo de vida, 16 expresiones sincronizadas con lo que dice, reconocimiento facial con consentimiento y la montura física en acrílico, MDF e impresión 3D, toda paramétrica.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>INTERACCIÓN</h2>
+      <div class="ciclo" aria-label="Ciclo de vida del robot">
+        <span>DUERME</span><b>►</b><span>DESPIERTA</span><b>►</b><span>SALUDA</span><b>►</b><span>ESCUCHA</span><b>►</b><span>PIENSA</span><b>►</b><span>RESPONDE</span>
+      </div>
+      <div class="grid2">
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">ESTADOS EN VEZ DE MENÚS</span></div>
+          <div class="window-body">
+            <ul class="lista">
+              <li><b>Duerme a los 10 s</b> sin ver a nadie: cierra los ojos y ronca en pantalla. El ruido no lo despierta, a propósito, para que no reaccione a cualquier sonido de la sala.</li>
+              <li><b>Despierta solo al ver una cara</b>: entreabre los ojos, parpadea, mira a la persona y la saluda, por su nombre si la reconoce.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">CONVERSACIÓN NATURAL</span></div>
+          <div class="window-body">
+            <ul class="lista">
+              <li>Mira a quien habla: detecta caras y quién mueve la boca.</li>
+              <li>Se calla si lo interrumpes (distingue tu voz del eco de la suya).</li>
+              <li>Ignora voces del fondo si nadie frente a la cámara habla.</li>
+              <li>Solo “piensa en voz alta” cuando le haces una pregunta.</li>
+              <li>Personalidad: amigo chileno, sarcasmo cariñoso, respuestas cortas.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>16 EXPRESIONES</h2>
+      <p>Claude elige una emoción por frase. Los ojos la actúan justo al decirla y la boca en pantalla cambia de forma con el audio. Prueba cada una:</p>
+      <div class="exprs" id="exprs"></div>
+      <div class="grid2">
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">REGLA DE DISEÑO</span></div>
+          <div class="window-body"><p>Los dos ojos parpadean siempre juntos. La asimetría queda solo para el guiño y los gestos que la necesitan: los parpadeos descoordinados se veían como una falla.</p></div>
+        </div>
+        <figure class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">BOCAS SEGÚN LA EMOCIÓN</span></div>
+          <img src="img/bocas_emociones.png" alt="Formas de boca según la emoción" loading="lazy" style="background:#0f1017">
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>ÉTICA</h2>
+      <div class="window">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">TU CARA ES UN DATO BIOMÉTRICO</span></div>
+        <div class="window-body">
+          <ul class="lista">
+            <li>Pregunta por voz antes de recordarte y guarda la huella (128 números) solo en el computador.</li>
+            <li>Te olvida si le dices “olvídame”.</li>
+            <li>El escaneo guiado pide 6 ángulos con un marco que barre la cara.</li>
+            <li>Reconoce combinando cara (70 %) y ropa (30 %). La ropa ayuda de lado o de lejos, pero una cara claramente distinta siempre gana.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>CÓMO FUNCIONA</h2>
+<pre class="diagrama">Cámara ─► seguir.py (YuNet · MediaPipe · SFace) ─► USB serie ─► Arduino UNO ─► I2C ─► PCA9685 ─► 6 × SG90
+              ▲ │  UDP (expresiones, quién habla, caras)
+              │ ▼
+Micrófono ─► hablar.py (Whisper · Claude · voz · boca) ◄──► API de Claude
+                    │ UDP (forma de la boca)
+                    ▼
+            servidor.py ◄── página web + panel en vivo</pre>
+      <div class="grid2">
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">MECANISMO</span></div>
+          <div class="window-body">
+            <p>EyeMech ε3.2 de Will Cogley: 6 servos SG90 (4 para los párpados, 2 para la mirada X/Y) controlados por un Arduino UNO y una PCA9685, calibrados servo por servo.</p>
+            <p class="muted">La mirada apunta a los ojos de la persona, no al centro de la cara: al principio miraba muy arriba.</p>
+          </div>
+        </div>
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">VOZ</span></div>
+          <div class="window-body">
+            <p>Whisper transcribe ► Claude Haiku responde (rápido y barato, con caché de prompt) ► voz sintética ► boca animada que sigue el audio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>EL OBJETO</h2>
+      <div class="window">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">CUATRO ITERACIONES DE MONTURA</span></div>
+        <div class="window-body">
+          <ol class="iteraciones">
+            <li><div><span class="tag">DESCARTADA</span><p>Cabeza completa tipo personaje: tapaba demasiado y copiaba un personaje existente.</p></div></li>
+            <li><div><span class="tag">DESCARTADA</span><p>Montura tipo cámara web con pinza articulada: la articulación no aguantaba el peso.</p></div></li>
+            <li><div><span class="tag">DESCARTADA</span><p>Frente de MDF que tapaba el mecanismo: chocaba con los párpados al cerrar y con la pieza superior al mirar abajo.</p></div></li>
+            <li class="ok"><div><span class="tag">FINAL</span><p>Mecanismo a la vista sobre acrílico negro de 5 mm, ganchos a 15° en el borde de la pantalla y pata hasta la mesa con varilla M8, porque el peso le ganaba a la bisagra. La electrónica va en una caja de MDF de 3 mm con grabado de cerebro.</p></div></li>
+          </ol>
+          <p class="muted">Todo es paramétrico en código (CadQuery): las piezas salen de scripts en Python a partir de medidas reales, revisan choques y se imprimen sin soportes.</p>
+        </div>
+      </div>
+
+      <div class="galeria">
+        <figure><img src="img/estudio_tres_cuartos.jpg" alt="Robot Face visto en tres cuartos" loading="lazy"><figcaption>VISTA TRES CUARTOS</figcaption></figure>
+        <figure><img src="img/estudio_lado.jpg" alt="Perfil con ganchos y pata" loading="lazy"><figcaption>PERFIL: GANCHOS Y PATA</figcaption></figure>
+        <figure><img src="img/estudio_arriba_arduino.jpg" alt="Mecanismo y electrónica vistos desde arriba" loading="lazy"><figcaption>MECANISMO Y ELECTRÓNICA</figcaption></figure>
+        <figure><img src="img/estudio_mecanismo.jpg" alt="Detalle del EyeMech y un párpado" loading="lazy"><figcaption>EYEMECH Y PÁRPADO</figcaption></figure>
+        <figure><img src="img/estudio_arriba.jpg" alt="Base de acrílico desde arriba" loading="lazy"><figcaption>BASE DE ACRÍLICO</figcaption></figure>
+        <figure><img src="img/estudio_frente_mdf.jpg" alt="Iteración con frente de MDF" loading="lazy"><figcaption>LV3: FRENTE DE MDF</figcaption></figure>
+        <figure><img src="img/proceso_caja_cerebro.jpg" alt="Caja de MDF con grabado de cerebro" loading="lazy"><figcaption>CAJA CON GRABADO DE CEREBRO</figcaption></figure>
+        <figure><img src="img/proceso_caja_abierta.jpg" alt="Electrónica dentro de la caja abierta" loading="lazy"><figcaption>ELECTRÓNICA EN LA CAJA</figcaption></figure>
+        <figure><img src="img/proceso_prueba_notebook.jpg" alt="Prueba de altura sobre el notebook" loading="lazy"><figcaption>PRUEBA DE ALTURA</figcaption></figure>
+        <figure><img src="img/boceto.jpg" alt="Boceto de la montura" loading="lazy"><figcaption>BOCETO DE LA MONTURA</figcaption></figure>
+        <figure class="contain"><img src="img/vista.png" alt="Render CAD del conjunto" loading="lazy"><figcaption>RENDER CAD DEL CONJUNTO</figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>HERRAMIENTAS</h2>
+      <div class="grid3">
+        <div class="window"><div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">HARDWARE</span></div>
+          <div class="window-body chips"><span class="chip">ARDUINO UNO</span><span class="chip">PCA9685</span><span class="chip">SERVOS SG90</span></div></div>
+        <div class="window"><div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">SOFTWARE</span></div>
+          <div class="window-body chips"><span class="chip">PYTHON</span><span class="chip">OPENCV</span><span class="chip">MEDIAPIPE</span><span class="chip">WHISPER</span><span class="chip">API DE CLAUDE</span><span class="chip">HTML/CSS/JS</span></div></div>
+        <div class="window"><div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">FABRICACIÓN</span></div>
+          <div class="window-body chips"><span class="chip">CADQUERY</span><span class="chip">CORTE LÁSER</span><span class="chip">IMPRESIÓN 3D</span></div></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>PROYECTO EN EQUIPO: MARTIN DONOSO Y LUIS-FELIPE BENÍTEZ · UAI 2026<br>MECANISMO EYEMECH ε3.2 POR WILL COGLEY · MONTURA Y CAJA DE DISEÑO PROPIO</p>
+      <a class="btn" href="../">◀ VOLVER AL PORTAFOLIO</a>
+    </footer>
+  </div>
+
+  <script src="ojos.js"></script>
+  <script>
+    (() => {
+      const O = window.Ojos;
+      O.crear(document.getElementById('ojos-portada'));
+
+      const DESC = {
+        1: 'Ojos muy abiertos', 2: 'Párpados pesados', 3: 'Párpados inclinados', 4: 'Mira de lado a lado',
+        5: 'Cierra un solo ojo', 6: 'Un ojo más abierto', 7: 'Párpados de abajo suben', 8: 'Vuelta por arriba',
+        9: 'Busca a los lados', 10: 'Mira arriba al costado', 11: 'Mirada baja', 12: 'Ambos ojos juntos',
+        13: 'Un ojo entrecerrado', 14: 'Parpadeos rápidos', 15: 'Nadie a la vista', 16: 'Abre y te mira'
+      };
+      const RAPIDAS = [7, 1, 4, 5, 10, 11, 15];
+
+      const fichas = document.getElementById('fichas');
+      RAPIDAS.forEach(n => {
+        const b = document.createElement('button');
+        b.className = 'ficha'; b.type = 'button'; b.dataset.n = n;
+        b.textContent = (n === 15 ? 'Dormir' : O.EXPRESIONES[n].n).toUpperCase();
+        b.onclick = () => O.hacer(n);
+        fichas.appendChild(b);
+      });
+
+      const exprs = document.getElementById('exprs');
+      for (let n = 1; n < O.EXPRESIONES.length; n++) {
+        const b = document.createElement('button');
+        b.className = 'expr'; b.type = 'button'; b.dataset.n = n;
+        b.innerHTML = `${String(n).padStart(2, '0')} ${O.EXPRESIONES[n].n.toUpperCase()}<small>${DESC[n]}</small>`;
+        b.onclick = () => { O.hacer(n); document.getElementById('ojos-portada').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+        exprs.appendChild(b);
+      }
+
+      O.alCambiar(n => {
+        document.querySelectorAll('[data-n]').forEach(e => e.classList.toggle('activa', +e.dataset.n === n));
+        document.getElementById('estado').textContent = '● ' + O.texto(n).toUpperCase();
+      });
+    })();
+  </script>
+</body>
+</html>
