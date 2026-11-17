@@ -70,6 +70,7 @@
 
     .acciones { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem; }
     .btn-play { background: var(--danger); }
+    .descargas { display: flex; flex-wrap: wrap; gap: .8rem; }
     .video-fila { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
     .video { aspect-ratio: 9 / 16; max-width: 100%; background: #0f1017; }
     @media (max-width: 700px) { .video-fila { grid-template-columns: minmax(0, 1fr); } .video-fila .window:first-child { max-width: 360px; width: 100%; margin: 0 auto; } }
@@ -162,6 +163,7 @@
         <div class="acciones">
           <a class="btn btn-play" href="#video">► VER PRESENTACIÓN</a>
           <a class="btn" href="https://www.youtube.com/watch?v=ofJxqUiQPsg" target="_blank" rel="noopener">ABRIR EN YOUTUBE</a>
+          <a class="btn" href="#archivos">VER CÓDIGO</a>
         </div>
       </div>
       <div class="window ojos">
@@ -334,6 +336,25 @@ Micrófono ─► hablar.py (Whisper · Claude · voz · boca) ◄──► API 
           <div class="window-body chips"><span class="chip">PYTHON</span><span class="chip">OPENCV</span><span class="chip">MEDIAPIPE</span><span class="chip">WHISPER</span><span class="chip">API DE CLAUDE</span><span class="chip">HTML/CSS/JS</span></div></div>
         <div class="window"><div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">FABRICACIÓN</span></div>
           <div class="window-body chips"><span class="chip">CADQUERY</span><span class="chip">CORTE LÁSER</span><span class="chip">IMPRESIÓN 3D</span></div></div>
+      </div>
+    </section>
+
+    <section id="archivos">
+      <h2>ARCHIVOS Y CÓDIGO</h2>
+      <div class="window">
+        <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">REPOSITORIO ROBOT-FACE</span></div>
+        <div class="window-body">
+          <p>Programas en Python, sketches del Arduino, CAD paramétrico, piezas STL, cortes láser y la página con el panel en vivo para controlar el robot conectado.</p>
+          <div class="acciones" style="margin-top:0">
+            <a class="btn btn-play" href="https://github.com/martindonoso2005-cell/Robot-Face" target="_blank" rel="noopener">VER CÓDIGO EN GITHUB ►</a>
+          </div>
+          <div class="descargas">
+            <a class="btn" href="https://martindonoso2005-cell.github.io/Robot-Face/web/descargas/RobotFace_codigo.zip">↓ CÓDIGO · ZIP</a>
+            <a class="btn" href="https://martindonoso2005-cell.github.io/Robot-Face/web/descargas/RobotFace_piezas_3d.zip">↓ PIEZAS 3D · STL</a>
+            <a class="btn" href="https://martindonoso2005-cell.github.io/Robot-Face/web/descargas/RobotFace_corte_laser.zip">↓ CORTE LÁSER · SVG</a>
+          </div>
+          <p class="muted">Para usar el robot: conecta el Arduino por USB, instala los requisitos y abre el panel en vivo (pagina.bat en Windows). Los pasos completos están en el README del repositorio.</p>
+        </div>
       </div>
     </section>
 
