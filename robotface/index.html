@@ -68,6 +68,15 @@
     .window-title { font-family: var(--pixel); font-size: .5rem; color: var(--muted); }
     .window-body { padding: 1.2rem; display: grid; gap: .9rem; }
 
+    .acciones { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem; }
+    .btn-play { background: var(--danger); }
+    .video-fila { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    .video { aspect-ratio: 9 / 16; max-width: 100%; background: #0f1017; }
+    @media (max-width: 700px) { .video-fila { grid-template-columns: minmax(0, 1fr); } .video-fila .window:first-child { max-width: 360px; width: 100%; margin: 0 auto; } }
+    .video iframe { width: 100%; height: 100%; border: 0; display: block; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
     /* Ojos interactivos */
     .ojos svg { width: 100%; height: auto; background: #0f1017; border-bottom: 4px solid var(--border); display: block; }
     .estado { font-family: var(--pixel); font-size: .55rem; color: var(--green); }
@@ -150,6 +159,10 @@
         <h1>ROBOT FACE</h1>
         <p class="lead">Una IA que te mira de vuelta. Ojos animatrónicos sobre un notebook que conversan por voz con Claude y expresan emociones con los párpados.</p>
         <p class="autores">MARTIN DONOSO · LUIS-FELIPE BENÍTEZ<br>UAI · DESIGNLAB · 2026</p>
+        <div class="acciones">
+          <a class="btn btn-play" href="#video">► VER PRESENTACIÓN</a>
+          <a class="btn" href="https://www.youtube.com/watch?v=ofJxqUiQPsg" target="_blank" rel="noopener">ABRIR EN YOUTUBE</a>
+        </div>
       </div>
       <div class="window ojos">
         <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">DEMO · MUEVE EL MOUSE</span></div>
@@ -160,6 +173,30 @@
         </div>
       </div>
     </div>
+
+    <section id="video">
+      <h2>PRESENTACIÓN</h2>
+      <div class="video-fila">
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">VIDEO</span></div>
+          <div class="video">
+            <iframe src="https://www.youtube.com/embed/ofJxqUiQPsg" title="Presentación de Robot Face" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div class="window">
+          <div class="window-header"><div class="dots"><i></i><i></i><i></i></div><span class="window-title">ROBOT FACE EN FUNCIONAMIENTO</span></div>
+          <div class="window-body">
+            <p>El robot montado sobre el notebook: despierta al ver una cara, sigue a quien habla con la mirada y conversa por voz mientras los párpados actúan cada emoción.</p>
+            <ul class="lista">
+              <li>Ojos animatrónicos con 6 servos.</li>
+              <li>Boca animada en la pantalla del notebook.</li>
+              <li>Conversación por voz con Claude.</li>
+            </ul>
+            <a class="btn" href="https://www.youtube.com/watch?v=ofJxqUiQPsg" target="_blank" rel="noopener" style="justify-self:start">ABRIR EN YOUTUBE</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section>
       <div class="window">
