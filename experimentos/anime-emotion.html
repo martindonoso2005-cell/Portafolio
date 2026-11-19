@@ -1,0 +1,2779 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anime Emotion & Hand Music AI – Enojo, Ojos de Estrella y Notas Musicales</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            animeRed: '#FF2A2A',
+            animeGold: '#FFD738',
+            animeDark: '#0B0C10',
+            animeCard: '#13151C',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090A0F;
+      color: #F3F4F6;
+      overflow-x: hidden;
+    }
+
+    /* Fondo radial dual (Rojo Enojo + Dorado Estrella) */
+    .bg-anime-grid {
+      background-image:
+        radial-gradient(circle at 20% 0%, rgba(255, 42, 42, 0.13), transparent 50%),
+        radial-gradient(circle at 80% 0%, rgba(250, 204, 21, 0.12), transparent 50%),
+        radial-gradient(circle at 85% 90%, rgba(239, 68, 68, 0.07), transparent 45%),
+        linear-gradient(to bottom, rgba(19, 21, 28, 0.4) 1px, transparent 1px),
+        linear-gradient(to right, rgba(19, 21, 28, 0.4) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* Espejo para el video de la cámara */
+    .mirror-video {
+      transform: scaleX(-1);
+    }
+
+    /* Sliders Rojos (Enojo) */
+    input[type="range"].slider-red {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"].slider-red::-webkit-slider-runnable-track {
+      background: #272A36;
+      height: 8px;
+      border-radius: 999px;
+    }
+    input[type="range"].slider-red::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #FF2A2A;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(255, 42, 42, 0.8);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].slider-red::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    /* Sliders Dorados (Felicidad / Ojos de Estrella) */
+    input[type="range"].slider-gold {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"].slider-gold::-webkit-slider-runnable-track {
+      background: #272A36;
+      height: 8px;
+      border-radius: 999px;
+    }
+    input[type="range"].slider-gold::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #FACC15;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.85);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].slider-gold::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    /* Resplandores del marco según emociones detectadas */
+    .angry-frame-glow {
+      box-shadow: 0 0 0 2px rgba(255, 42, 42, 0.85), 0 0 40px -5px rgba(255, 42, 42, 0.55) !important;
+    }
+    .happy-frame-glow {
+      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.9), 0 0 45px -5px rgba(250, 204, 21, 0.6) !important;
+    }
+    .mixed-frame-glow {
+      box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.9), 0 0 45px -5px rgba(255, 90, 42, 0.6) !important;
+    }
+
+    @keyframes pulse-fast {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.75; }
+    }
+    .animate-pulse-fast {
+      animation: pulse-fast 0.9s infinite ease-in-out;
+    }
+
+    /* Sliders Cian (Manos / Música) */
+    input[type="range"].slider-cyan {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"].slider-cyan::-webkit-slider-runnable-track {
+      background: #272A36;
+      height: 8px;
+      border-radius: 999px;
+    }
+    input[type="range"].slider-cyan::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #22D3EE;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.85);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].slider-cyan::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    /* Animación de rebote Pop-Up para la Nota Musical y las ondas de sonido */
+    @keyframes note-pop {
+      0% { transform: scale(0.55); opacity: 0; }
+      55% { transform: scale(1.16); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-note-pop {
+      animation: note-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes sound-wave-bar {
+      0%, 100% { transform: scaleY(0.3); }
+      50% { transform: scaleY(1); }
+    }
+    .sound-bar {
+      animation: sound-wave-bar 0.45s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-anime-grid min-h-screen flex flex-col justify-between selection:bg-red-500 selection:text-white">
+
+  <!-- Barra Superior / Header -->
+  <header class="w-full border-b border-white/10 bg-[#0D0F17]/85 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+
+      <!-- Logo y Título -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 via-amber-500 to-cyan-400 p-0.5 shadow-lg shadow-amber-500/20">
+          <div class="w-full h-full bg-[#11131A] rounded-[10px] flex items-center justify-center relative overflow-hidden">
+            <!-- Icono dual Vena + Estrella -->
+            <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none">
+              <!-- Estrella Dorada izquierda -->
+              <path d="M 34 16 Q 34 38 12 38 Q 34 38 34 60 Q 34 38 56 38 Q 34 38 34 16 Z" fill="#FACC15" stroke="#FEF08A" stroke-width="3"/>
+              <!-- Vena Roja derecha -->
+              <path d="M 55 62 L 66 60 Q 70 59 68 54 L 64 46" stroke="#FF2A2A" stroke-width="7" stroke-linecap="round"/>
+              <path d="M 78 46 L 80 56 Q 81 60 85 59 L 93 56" stroke="#FF2A2A" stroke-width="7" stroke-linecap="round"/>
+              <path d="M 58 78 L 69 75 Q 73 74 73 79 L 74 88" stroke="#FF2A2A" stroke-width="7" stroke-linecap="round"/>
+              <path d="M 94 71 L 84 74 Q 80 75 82 79 L 86 87" stroke="#FF2A2A" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h1 class="font-display font-bold text-lg sm:text-xl tracking-tight text-white flex flex-wrap items-center gap-2">
+            Anime Emotion & Hand Music FX
+            <span class="text-[11px] font-sans font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-red-500/20 via-amber-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+              Face + Hand MediaPipe
+            </span>
+          </h1>
+          <p class="text-xs text-gray-400 hidden sm:block">
+            Multi-Rostro (Enojo 💢 y Ojos de Estrella ✨) + Notas Musicales con los Dedos 🎵 (DO-RE-MI-FA-SOL)
+          </p>
+        </div>
+      </div>
+
+      <!-- Indicador de Estado Principal (Pill Dinámico Multi-Rostro) -->
+      <div id="statusPill" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-gray-900/90 border border-white/15 shadow-inner transition-all duration-300">
+        <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <span id="statusText" class="text-xs sm:text-sm font-semibold tracking-wide text-gray-200">
+          Esperando rostros y manos...
+        </span>
+      </div>
+
+      <!-- Estadísticas de Rendimiento, Caras y Manos -->
+      <div class="hidden md:flex items-center gap-2 text-xs text-gray-300">
+        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="facesCountBadge">0 / 5 rostros</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          <i data-lucide="hand" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span id="handsCountBadge">Mano: No</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 font-mono">
+          <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span id="fpsCounter">0 FPS</span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- Columna Izquierda: Vista de Cámara Interactiva y Superposición Canvas (8 columnas en Desktop) -->
+    <div class="lg:col-span-8 flex flex-col gap-4">
+
+      <!-- Contenedor de Video + Canvas -->
+      <div id="viewportContainer" class="relative w-full aspect-video bg-[#11131A] rounded-2xl overflow-hidden border border-white/10 shadow-2xl transition-shadow duration-300 flex items-center justify-center">
+
+        <!-- Video de la Webcam (Espejado) -->
+        <video id="webcamVideo" class="w-full h-full object-cover mirror-video hidden" playsinline muted></video>
+
+        <!-- Canvas de Renderizado Superpuesto (Dibuja efectos en todos los rostros y manos detectados) -->
+        <canvas id="overlayCanvas" class="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"></canvas>
+
+        <!-- Viñeta Roja Dinámica cuando hay enojo -->
+        <div id="angryVignette" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300 z-10"
+             style="background: radial-gradient(circle, transparent 58%, rgba(255, 30, 30, 0.28) 100%);"></div>
+
+        <!-- Viñeta Dorada Cálida estilo Anime cuando hay felicidad / ojos de estrella -->
+        <div id="happyVignette" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300 z-10"
+             style="background: radial-gradient(circle, transparent 52%, rgba(250, 204, 21, 0.26) 88%, rgba(245, 158, 11, 0.36) 100%);"></div>
+
+        <!-- Badges Flotantes en Esquina Superior Izquierda del Video -->
+        <div class="absolute top-3.5 left-3.5 z-20 flex flex-wrap items-center gap-2 pointer-events-none">
+          <div id="liveBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-white/15 text-[11px] font-medium text-gray-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="liveBadgeText">FACE + HAND TRACKING</span>
+          </div>
+          <div id="calibrationBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-950/80 backdrop-blur-md border border-emerald-500/40 text-[11px] font-medium text-emerald-300">
+            <span>✓ Rostros calibrados</span>
+          </div>
+        </div>
+
+        <!-- Leyenda Flotante en Esquina Superior Derecha del Video -->
+        <div id="legendOverlay" class="hidden sm:flex absolute top-3.5 right-3.5 z-20 items-center gap-2 pointer-events-none">
+          <div class="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-red-500/30 text-[11px] font-medium text-red-300 flex items-center gap-1">
+            <span>💢 Enojo</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-amber-400/30 text-[11px] font-medium text-amber-200 flex items-center gap-1">
+            <span>✨ Ojos Estrella</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-cyan-400/35 text-[11px] font-medium text-cyan-200 flex items-center gap-1">
+            <span>🎵 1-5 Dedos = DO..SOL</span>
+          </div>
+        </div>
+
+        <!-- HUD FLOTANTE DE NOTA MUSICAL EN PANTALLA (Sección 9.4) -->
+        <div id="noteFloatingHud" class="hidden absolute bottom-4 left-4 z-20 pointer-events-none items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/75 backdrop-blur-md border border-cyan-400/50 shadow-2xl transition-all duration-200">
+          <div id="noteHudCircle" class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex flex-col items-center justify-center text-black font-display font-bold shadow-lg shadow-cyan-500/30">
+            <span id="noteHudName" class="text-lg leading-none">DO</span>
+            <span id="noteHudFreq" class="text-[9px] font-mono font-semibold opacity-80">262Hz</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-cyan-300" id="noteHudTitle">Nota Detectada</span>
+              <!-- Barras de onda de sonido sincronizadas -->
+              <div id="noteSoundWaveBars" class="flex items-end gap-0.5 h-3.5">
+                <span class="w-1 h-3 bg-cyan-400 rounded-full sound-bar" style="animation-delay: 0ms;"></span>
+                <span class="w-1 h-3.5 bg-cyan-300 rounded-full sound-bar" style="animation-delay: 120ms;"></span>
+                <span class="w-1 h-2.5 bg-cyan-400 rounded-full sound-bar" style="animation-delay: 240ms;"></span>
+                <span class="w-1 h-3 bg-cyan-200 rounded-full sound-bar" style="animation-delay: 80ms;"></span>
+              </div>
+            </div>
+            <span id="noteHudGestureDesc" class="text-[11px] text-gray-300">Solo Índice levantado</span>
+          </div>
+        </div>
+
+        <!-- Estado Inicial / Placeholder cuando la cámara está desactivada -->
+        <div id="cameraPlaceholder" class="z-20 flex flex-col items-center justify-center text-center p-6 max-w-lg">
+          <div class="flex items-center gap-4 mb-5">
+            <!-- Icono Vena de Enojo -->
+            <div class="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center shadow-inner">
+              <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none">
+                <path d="M 18 36 L 34 33 C 39 32 41 29 39 24 L 33 12" stroke="#FF2A2A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 60 11 L 63 27 C 64 32 67 34 72 32 L 85 27" stroke="#FF2A2A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 24 65 L 40 61 C 45 60 48 63 48 68 L 49 84" stroke="#FF2A2A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 88 55 L 72 58 C 67 59 65 62 67 67 L 73 81" stroke="#FF2A2A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <!-- Icono Ojos de Estrella -->
+            <div class="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/35 flex items-center justify-center shadow-inner">
+              <svg class="w-11 h-11" viewBox="0 0 100 100" fill="none">
+                <path d="M 50 8 Q 50 50 8 50 Q 50 50 50 92 Q 50 50 92 50 Q 50 50 50 8 Z" fill="#FACC15" stroke="#FEF08A" stroke-width="5" stroke-linejoin="round"/>
+                <circle cx="50" cy="50" r="10" fill="#FFFFFF"/>
+              </svg>
+            </div>
+            <!-- Icono Mano Musical -->
+            <div class="w-16 h-16 rounded-2xl bg-cyan-400/10 border border-cyan-400/35 flex items-center justify-center shadow-inner">
+              <i data-lucide="music" class="w-9 h-9 text-cyan-400"></i>
+            </div>
+          </div>
+
+          <h2 class="font-display font-bold text-xl sm:text-2xl text-white mb-2">
+            Emociones Anime 💢✨ + Notas con tu Mano 🎵
+          </h2>
+          <p class="text-sm text-gray-400 mb-6 leading-relaxed">
+            Detecta hasta <strong>5 rostros</strong> (Vena de Enojo y Ojos de Estrella) y simultáneamente reconoce los <strong>21 puntos de tu mano</strong> para tocar las notas <strong>DO, RE, MI, FA y SOL</strong> levantando tus dedos frente a la cámara.
+          </p>
+          <button id="startCamBtnHero" disabled class="flex items-center gap-2.5 px-6 py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-red-600 via-amber-500 to-cyan-500 hover:from-red-500 hover:to-cyan-400 text-white shadow-lg shadow-red-600/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i data-lucide="loader-2" id="heroBtnSpinner" class="w-4 h-4 animate-spin"></i>
+            <span id="heroBtnText">Cargando Face & Hand Landmarker...</span>
+          </button>
+        </div>
+
+        <!-- Mensaje de Error no bloqueante -->
+        <div id="errorBanner" class="hidden absolute bottom-4 left-4 right-4 z-30 bg-red-950/95 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl shadow-lg flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 text-xs sm:text-sm">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-400 shrink-0"></i>
+            <span id="errorBannerText">No se pudo acceder a la cámara web.</span>
+          </div>
+          <button id="closeErrorBtn" class="text-xs px-2.5 py-1 rounded bg-red-900/60 hover:bg-red-800 text-white">
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Barra de Controles Rápidos bajo el Video -->
+      <div class="bg-[#13151C] border border-white/10 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Botón Principal: Activar / Desactivar Cámara -->
+          <button id="toggleCamBtn" disabled class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-red-600 hover:bg-red-500 text-white transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <span id="toggleCamText">Activar Cámara</span>
+          </button>
+
+          <!-- Botón: Calibrar Rostros Neutrales -->
+          <button id="calibrateBtn" disabled class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 transition-all disabled:opacity-40 disabled:cursor-not-allowed" title="Calibra la expresión neutral actual de todas las personas en pantalla">
+            <i data-lucide="scan-face" class="w-4 h-4 text-emerald-400"></i>
+            <span>Calibrar Neutral</span>
+          </button>
+
+          <!-- Botón: Mostrar/Ocultar Malla de Puntos -->
+          <button id="toggleDebugBtn" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all">
+            <i data-lucide="eye" class="w-4 h-4 text-sky-400"></i>
+            <span id="debugBtnText">Landmarks: OFF</span>
+          </button>
+
+          <!-- Botón: Activar / Silenciar Sonido Musical -->
+          <button id="toggleAudioBtn" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 border border-cyan-400/35 transition-all">
+            <i data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
+            <span id="audioBtnText">Audio: ON</span>
+          </button>
+        </div>
+
+        <!-- Botones para Probar Efectos Manualmente en todas las caras detectadas -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="testVeinBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-medium text-xs bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition-all">
+            <span>💢 Probar Enojo: OFF</span>
+          </button>
+          <button id="testStarBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-medium text-xs bg-amber-400/15 hover:bg-amber-400/25 text-amber-200 border border-amber-400/35 transition-all">
+            <span>✨ Probar Estrellas: OFF</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- NUEVA TARJETA (Sección 9): Reconocimiento de Manos y Notas Musicales en Tiempo Real -->
+      <div class="bg-[#13151C] border border-cyan-500/25 rounded-2xl p-5 shadow-lg space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
+              <i data-lucide="music-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                Instrumento Gestual con MediaPipe Hand Landmarker
+                <span id="handDetectedStatusBadge" class="text-[11px] font-sans font-semibold px-2 py-0.5 rounded-md bg-white/5 text-gray-400 border border-white/10">
+                  Sin mano detectada
+                </span>
+              </h3>
+              <p class="text-xs text-gray-400">
+                Levanta los dedos en orden para tocar cada nota. Haz clic en cualquier tarjeta para escuchar su sonido.
+              </p>
+            </div>
+          </div>
+
+          <!-- Selector de Timbre (Piano Suave vs Sintetizador Cálido) -->
+          <div class="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/10">
+            <button id="synthPianoBtn" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-black transition-all">
+              🎹 Piano Suave
+            </button>
+            <button id="synthWarmBtn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white transition-all">
+              🎛️ Synth Cálido
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador en Tiempo Real de los 5 Dedos (Pulgar, Índice, Medio, Anular, Meñique) -->
+        <div class="grid grid-cols-5 gap-2">
+          <div id="fingerPill-index" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all">
+            <span class="text-[10px] uppercase tracking-wider font-semibold">1. Índice</span>
+            <span class="text-xs font-bold mt-0.5 finger-state-label">Doblado</span>
+          </div>
+          <div id="fingerPill-middle" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all">
+            <span class="text-[10px] uppercase tracking-wider font-semibold">2. Medio</span>
+            <span class="text-xs font-bold mt-0.5 finger-state-label">Doblado</span>
+          </div>
+          <div id="fingerPill-ring" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all">
+            <span class="text-[10px] uppercase tracking-wider font-semibold">3. Anular</span>
+            <span class="text-xs font-bold mt-0.5 finger-state-label">Doblado</span>
+          </div>
+          <div id="fingerPill-pinky" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all">
+            <span class="text-[10px] uppercase tracking-wider font-semibold">4. Meñique</span>
+            <span class="text-xs font-bold mt-0.5 finger-state-label">Doblado</span>
+          </div>
+          <div id="fingerPill-thumb" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all">
+            <span class="text-[10px] uppercase tracking-wider font-semibold">5. Pulgar</span>
+            <span class="text-xs font-bold mt-0.5 finger-state-label">Doblado</span>
+          </div>
+        </div>
+
+        <!-- Las 5 Posiciones de Dedos / Teclas Musicales Interactivas (DO, RE, MI, FA, SOL) -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <button data-note="DO" class="note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center">
+            <span class="text-xs font-mono text-cyan-300 font-semibold">1 Dedo</span>
+            <span class="font-display font-bold text-2xl text-white my-0.5">DO</span>
+            <span class="text-[11px] text-gray-400 leading-tight">Solo Índice</span>
+          </button>
+
+          <button data-note="RE" class="note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center">
+            <span class="text-xs font-mono text-emerald-300 font-semibold">2 Dedos</span>
+            <span class="font-display font-bold text-2xl text-white my-0.5">RE</span>
+            <span class="text-[11px] text-gray-400 leading-tight">Índice + Medio</span>
+          </button>
+
+          <button data-note="MI" class="note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center">
+            <span class="text-xs font-mono text-amber-300 font-semibold">3 Dedos</span>
+            <span class="font-display font-bold text-2xl text-white my-0.5">MI</span>
+            <span class="text-[11px] text-gray-400 leading-tight">Índ + Med + Anular</span>
+          </button>
+
+          <button data-note="FA" class="note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center">
+            <span class="text-xs font-mono text-fuchsia-300 font-semibold">4 Dedos</span>
+            <span class="font-display font-bold text-2xl text-white my-0.5">FA</span>
+            <span class="text-[11px] text-gray-400 leading-tight">Índ+Med+Anu+Meñ</span>
+          </button>
+
+          <button data-note="SOL" class="note-card-btn col-span-2 sm:col-span-1 group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center">
+            <span class="text-xs font-mono text-rose-300 font-semibold">5 Dedos</span>
+            <span class="font-display font-bold text-2xl text-white my-0.5">SOL</span>
+            <span class="text-[11px] text-gray-400 leading-tight">Mano completa (+Pulgar)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjeta Inferior: Lista en Vivo de Personas Detectadas (Multi-Face Telemetry) -->
+      <div class="bg-[#13151C] border border-white/10 rounded-2xl p-5 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-sm sm:text-base text-white flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-amber-400"></i>
+            Monitoreo Individual por Persona en Tiempo Real
+          </h3>
+          <span id="activeFacesSubtitle" class="text-xs text-gray-400">
+            Hasta 5 rostros simultáneos
+          </span>
+        </div>
+
+        <!-- Contenedor dinámico de tarjetas por rostro -->
+        <div id="multiFaceCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="col-span-full py-6 text-center text-xs text-gray-500 bg-black/25 rounded-xl border border-white/5">
+            Activa la cámara para ver los niveles individuales de Enojo 💢 y Felicidad ✨ de cada persona en pantalla.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Columna Derecha: Umbrales de Enojo y Felicidad + Personalización Visual (4 columnas en Desktop) -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+
+      <!-- Tarjeta 1: Configuración de Emoción 1 - ENOJO (Vena Roja) -->
+      <div class="bg-[#13151C] border border-white/10 rounded-2xl p-5 shadow-lg flex flex-col gap-3.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
+            <span class="text-base">💢</span>
+            Detección de Enojo (Vena)
+          </h3>
+          <span id="angerScoreBadge" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-red-500/15 text-red-300 border border-red-500/30">
+            Máx: 0%
+          </span>
+        </div>
+
+        <!-- Barra de nivel máximo de enojo -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-gray-400">
+            <span>Relajado</span>
+            <span id="angerThresholdMarkerLabel" class="text-red-400 font-semibold">Umbral Enojo: 40%</span>
+            <span>¡Furia!</span>
+          </div>
+          <div class="relative w-full h-3.5 bg-[#1E2230] rounded-full overflow-hidden border border-white/10 p-0.5">
+            <div id="angerProgressBar" class="h-full rounded-full bg-gradient-to-r from-amber-500 to-red-600 transition-all duration-75" style="width: 0%;"></div>
+            <div id="angerThresholdIndicatorLine" class="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_6px_#fff] z-10 pointer-events-none" style="left: 40%;"></div>
+          </div>
+        </div>
+
+        <!-- Slider de Umbral de Enojo -->
+        <div class="space-y-1.5 pt-1">
+          <div class="flex items-center justify-between">
+            <label for="thresholdSlider" class="text-xs font-medium text-gray-300">
+              Sensibilidad de Cejas / Ceño Fruncido
+            </label>
+            <span id="thresholdValueText" class="text-xs font-mono text-red-400 font-semibold">40%</span>
+          </div>
+          <input id="thresholdSlider" type="range" min="18" max="78" value="40" class="w-full slider-red" />
+        </div>
+
+        <!-- Selector entre los 2 estilos de Vena -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button id="styleAnimeBtn" class="vein-style-btn active flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 border-red-500 bg-red-500/10 text-white transition-all">
+            <svg class="w-6 h-6 shrink-0" viewBox="0 0 100 100" fill="none">
+              <path d="M 16 38 L 35 34 C 41 33 43 30 40 24 L 33 10" stroke="#FF2A2A" stroke-width="11" stroke-linecap="round"/>
+              <path d="M 59 10 L 63 27 C 64 33 67 35 73 33 L 88 27" stroke="#FF2A2A" stroke-width="11" stroke-linecap="round"/>
+              <path d="M 22 65 L 40 61 C 46 60 49 63 49 69 L 50 86" stroke="#FF2A2A" stroke-width="11" stroke-linecap="round"/>
+              <path d="M 89 54 L 72 58 C 66 59 64 62 67 68 L 74 83" stroke="#FF2A2A" stroke-width="11" stroke-linecap="round"/>
+            </svg>
+            <span class="text-xs font-semibold">Cruz Anime</span>
+          </button>
+
+          <button id="styleCurvedBtn" class="vein-style-btn flex items-center justify-center gap-2 p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 transition-all">
+            <svg class="w-6 h-6 shrink-0" viewBox="0 0 100 100" fill="none">
+              <path d="M 23 12 C 36 39, 64 39, 77 12" stroke="#FF2A2A" stroke-width="12" stroke-linecap="round" />
+              <path d="M 88 23 C 61 36, 61 64, 88 77" stroke="#FF2A2A" stroke-width="12" stroke-linecap="round" />
+              <path d="M 23 88 C 36 61, 64 61, 77 88" stroke="#FF2A2A" stroke-width="12" stroke-linecap="round" />
+              <path d="M 12 23 C 39 36, 39 64, 12 77" stroke="#FF2A2A" stroke-width="12" stroke-linecap="round" />
+            </svg>
+            <span class="text-xs font-semibold">Arcos Curvos</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjeta 2: Configuración de Emoción 2 - FELICIDAD (Ojos de Estrella) -->
+      <div class="bg-[#13151C] border border-white/10 rounded-2xl p-5 shadow-lg flex flex-col gap-3.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
+            <span class="text-base">✨</span>
+            Felicidad (Ojos de Estrella)
+          </h3>
+          <span id="happyScoreBadge" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/30">
+            Máx: 0%
+          </span>
+        </div>
+
+        <!-- Barra de nivel máximo de felicidad -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-gray-400">
+            <span>Neutral</span>
+            <span id="happyThresholdMarkerLabel" class="text-amber-300 font-semibold">Umbral Estrella: 38%</span>
+            <span>¡Ilusión Anime!</span>
+          </div>
+          <div class="relative w-full h-3.5 bg-[#1E2230] rounded-full overflow-hidden border border-white/10 p-0.5">
+            <div id="happyProgressBar" class="h-full rounded-full bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-200 transition-all duration-75" style="width: 0%;"></div>
+            <div id="happyThresholdIndicatorLine" class="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_6px_#fff] z-10 pointer-events-none" style="left: 38%;"></div>
+          </div>
+        </div>
+
+        <!-- Slider de Umbral de Felicidad (esta parte faltaba en el código pegado) -->
+        <div class="space-y-1.5 pt-1">
+          <div class="flex items-center justify-between">
+            <label for="happyThresholdSlider" class="text-xs font-medium text-gray-300">
+              Sensibilidad de Sonrisa / Mejillas
+            </label>
+            <span id="happyThresholdValueText" class="text-xs font-mono text-amber-300 font-semibold">38%</span>
+          </div>
+          <input id="happyThresholdSlider" type="range" min="15" max="80" value="38" class="w-full slider-gold" />
+        </div>
+      </div>
+
+      <!-- Tarjeta 3: Escala Global de Efectos y Estabilidad de Mano -->
+      <div class="bg-[#13151C] border border-white/10 rounded-2xl p-5 shadow-lg flex flex-col gap-3.5">
+        <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+          Ajustes de Escala y Estabilidad Gestual
+        </h3>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-300">Escala de Vena y Estrellas</span>
+            <span id="sizeValueText" class="font-mono text-gray-300 font-semibold">100%</span>
+          </div>
+          <input id="veinSizeSlider" type="range" min="65" max="155" value="100" class="w-full slider-gold" />
+        </div>
+
+        <div class="space-y-1.5 pt-1 border-t border-white/10">
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-300">Estabilidad de Gesto Musical</span>
+            <span id="handStabilityValueText" class="font-mono text-cyan-300 font-semibold">4 frames</span>
+          </div>
+          <input id="handStabilitySlider" type="range" min="2" max="10" value="4" class="w-full slider-cyan" />
+          <p class="text-[11px] text-gray-400 leading-tight">
+            Evita notas accidentales: confirma la nota tras mantener el gesto estable y no repite el sonido hasta cambiar de gesto o cerrar la mano.
+          </p>
+        </div>
+
+        <div class="text-xs text-gray-400 bg-white/5 rounded-xl p-3 border border-white/5 space-y-1.5">
+          <div class="font-semibold text-gray-200 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            Detección Simultánea Rostros + Mano
+          </div>
+          <p class="leading-relaxed">
+            Puedes hacer expresiones faciales de <strong>enojo 💢</strong> o <strong>felicidad ✨</strong> al mismo tiempo que tocas melodías con los dedos frente a la cámara.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer Minimalista -->
+  <footer class="w-full border-t border-white/10 py-3 px-4 text-center text-xs text-gray-500">
+    Procesamiento local en tiempo real con MediaPipe Face Landmarker & Hand Landmarker • Web Audio API Synth • Privacidad 100% en navegador.
+  </footer>
+
+  <!-- Script Principal con MediaPipe Tasks Vision -->
+  <script type="module">
+    import {
+      FaceLandmarker,
+      HandLandmarker,
+      FilesetResolver
+    } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
+    // ==========================================
+    // REFERENCIAS DEL DOM
+    // ==========================================
+    const webcamVideo = document.getElementById("webcamVideo");
+    const overlayCanvas = document.getElementById("overlayCanvas");
+    const ctx = overlayCanvas.getContext("2d");
+    const viewportContainer = document.getElementById("viewportContainer");
+    const angryVignette = document.getElementById("angryVignette");
+    const happyVignette = document.getElementById("happyVignette");
+    const cameraPlaceholder = document.getElementById("cameraPlaceholder");
+
+    const startCamBtnHero = document.getElementById("startCamBtnHero");
+    const heroBtnSpinner = document.getElementById("heroBtnSpinner");
+    const heroBtnText = document.getElementById("heroBtnText");
+    const toggleCamBtn = document.getElementById("toggleCamBtn");
+    const toggleCamText = document.getElementById("toggleCamText");
+    const calibrateBtn = document.getElementById("calibrateBtn");
+    const toggleDebugBtn = document.getElementById("toggleDebugBtn");
+    const debugBtnText = document.getElementById("debugBtnText");
+    const testVeinBtn = document.getElementById("testVeinBtn");
+    const testStarBtn = document.getElementById("testStarBtn");
+
+    const statusPill = document.getElementById("statusPill");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const liveBadge = document.getElementById("liveBadge");
+    const calibrationBadge = document.getElementById("calibrationBadge");
+    const facesCountBadge = document.getElementById("facesCountBadge");
+    const handsCountBadge = document.getElementById("handsCountBadge");
+    const fpsCounter = document.getElementById("fpsCounter");
+    const multiFaceCardsContainer = document.getElementById("multiFaceCardsContainer");
+
+    // Referencias DOM de Manos y Notas Musicales (Sección 9)
+    const toggleAudioBtn = document.getElementById("toggleAudioBtn");
+    const audioBtnText = document.getElementById("audioBtnText");
+    const synthPianoBtn = document.getElementById("synthPianoBtn");
+    const synthWarmBtn = document.getElementById("synthWarmBtn");
+    const handDetectedStatusBadge = document.getElementById("handDetectedStatusBadge");
+    const noteFloatingHud = document.getElementById("noteFloatingHud");
+    const noteHudCircle = document.getElementById("noteHudCircle");
+    const noteHudName = document.getElementById("noteHudName");
+    const noteHudFreq = document.getElementById("noteHudFreq");
+    const noteHudGestureDesc = document.getElementById("noteHudGestureDesc");
+    const handStabilitySlider = document.getElementById("handStabilitySlider");
+    const handStabilityValueText = document.getElementById("handStabilityValueText");
+
+    const fingerPills = {
+      index: document.getElementById("fingerPill-index"),
+      middle: document.getElementById("fingerPill-middle"),
+      ring: document.getElementById("fingerPill-ring"),
+      pinky: document.getElementById("fingerPill-pinky"),
+      thumb: document.getElementById("fingerPill-thumb")
+    };
+    const noteCardButtons = document.querySelectorAll(".note-card-btn");
+
+    // Controles de Enojo
+    const angerScoreBadge = document.getElementById("angerScoreBadge");
+    const angerProgressBar = document.getElementById("angerProgressBar");
+    const thresholdSlider = document.getElementById("thresholdSlider");
+    const thresholdValueText = document.getElementById("thresholdValueText");
+    const angerThresholdMarkerLabel = document.getElementById("angerThresholdMarkerLabel");
+    const angerThresholdIndicatorLine = document.getElementById("angerThresholdIndicatorLine");
+
+    // Controles de Felicidad (Ojos de Estrella)
+    const happyScoreBadge = document.getElementById("happyScoreBadge");
+    const happyProgressBar = document.getElementById("happyProgressBar");
+    const happyThresholdSlider = document.getElementById("happyThresholdSlider");
+    const happyThresholdValueText = document.getElementById("happyThresholdValueText");
+    const happyThresholdMarkerLabel = document.getElementById("happyThresholdMarkerLabel");
+    const happyThresholdIndicatorLine = document.getElementById("happyThresholdIndicatorLine");
+
+    // Controles de Estilo y Escala
+    const styleAnimeBtn = document.getElementById("styleAnimeBtn");
+    const styleCurvedBtn = document.getElementById("styleCurvedBtn");
+    const veinSizeSlider = document.getElementById("veinSizeSlider");
+    const sizeValueText = document.getElementById("sizeValueText");
+
+    const errorBanner = document.getElementById("errorBanner");
+    const errorBannerText = document.getElementById("errorBannerText");
+    const closeErrorBtn = document.getElementById("closeErrorBtn");
+
+    // ==========================================
+    // CONFIGURACIÓN Y ESTADO MULTI-ROSTRO Y MANOS
+    // ==========================================
+    const MAX_FACES = 5;
+    let faceLandmarker = null;
+    let handLandmarker = null;
+    let isCameraRunning = false;
+    let mediaStream = null;
+    let lastVideoTime = -1;
+    let animationFrameId = null;
+
+    // Umbrales y opciones configurables
+    let angerThreshold = 0.40;
+    let happyThreshold = 0.38;
+    let showDebugLandmarks = false;
+    let forceTestVein = false;
+    let forceTestStar = false;
+    let veinStyle = "anime_angled";
+    let userScaleMultiplier = 1.0;
+
+    // Configuración Musical y de Mano (Sección 9)
+    let isAudioEnabled = true;
+    let synthTimbre = "piano"; // "piano" | "warm"
+    let audioCtx = null;
+    let handConfirmFramesRequired = 4; // Frames consecutivos para confirmar un gesto y evitar falsos positivos
+
+    // Definición de las 5 Notas Musicales y su combinación exacta de dedos
+    const MUSICAL_NOTES = {
+      DO: {
+        name: "DO",
+        scientific: "C4",
+        freq: 261.63,
+        color: "#22D3EE", // Cyan
+        gradient: "from-cyan-400 to-blue-600",
+        description: "Solo Índice levantado",
+        fingersCount: 1
+      },
+      RE: {
+        name: "RE",
+        scientific: "D4",
+        freq: 293.66,
+        color: "#34D399", // Emerald
+        gradient: "from-emerald-400 to-teal-600",
+        description: "Índice + Medio levantados",
+        fingersCount: 2
+      },
+      MI: {
+        name: "MI",
+        scientific: "E4",
+        freq: 329.63,
+        color: "#FACC15", // Amber
+        gradient: "from-amber-300 to-orange-500",
+        description: "Índice + Medio + Anular",
+        fingersCount: 3
+      },
+      FA: {
+        name: "FA",
+        scientific: "F4",
+        freq: 349.23,
+        color: "#E879F9", // Fuchsia
+        gradient: "from-fuchsia-400 to-purple-600",
+        description: "Índice + Medio + Anular + Meñique",
+        fingersCount: 4
+      },
+      SOL: {
+        name: "SOL",
+        scientific: "G4",
+        freq: 392.00,
+        color: "#FB7185", // Rose
+        gradient: "from-rose-400 to-red-600",
+        description: "Mano completa (5 dedos incl. Pulgar)",
+        fingersCount: 5
+      }
+    };
+
+    // Estado de estabilidad temporal y bloqueo de repetición continua de nota
+    const handMusicState = {
+      candidateGesture: null,     // Gesto detectado en el frame actual ("DO", "RE", "MI", "FA", "SOL" o null)
+      candidateFrames: 0,         // Cuántos frames consecutivos lleva el candidato actual
+      stableGesture: null,        // Gesto confirmado tras superar handConfirmFramesRequired
+      lockedPlayedNote: null,     // Nota actualmente bloqueada para no repetir mientras se mantenga el mismo gesto
+      neutralFramesCount: 0,      // Contador de frames en neutral para desbloquear repetición del mismo gesto
+      lastTriggeredNote: null,
+      lastTriggeredTime: 0,
+      ripples: []                 // Ondas visuales expansivas sincronizadas con el sonido en el Canvas
+    };
+
+    // Conexiones de los 21 puntos de la mano para dibujar el esqueleto
+    const HAND_CONNECTIONS = [
+      [0, 1], [1, 2], [2, 3], [3, 4],       // Pulgar
+      [0, 5], [5, 6], [6, 7], [7, 8],       // Índice
+      [5, 9], [9, 10], [10, 11], [11, 12],  // Medio
+      [9, 13], [13, 14], [14, 15], [15, 16],// Anular
+      [13, 17], [0, 17], [17, 18], [18, 19], [19, 20] // Meñique y palma
+    ];
+
+    // Tolerancia temporal (Histéresis por rostro)
+    const ACTIVATE_FRAMES_REQUIRED = 3;
+    const DEACTIVATE_FRAMES_REQUIRED = 8;
+
+    // Lista de rastreadores independientes para cada cara detectada
+    let faceTrackers = [];
+    let nextTrackerId = 1;
+
+    // Semilla de destellos flotantes alrededor para el efecto Ojos de Estrella
+    const SPARKLE_OFFSETS = [
+      { rx: -0.95, ry: -0.55, size: 0.30, speed: 0.005, phase: 0.2 },
+      { rx:  0.98, ry: -0.48, size: 0.34, speed: 0.006, phase: 1.7 },
+      { rx: -0.82, ry:  0.42, size: 0.24, speed: 0.007, phase: 3.1 },
+      { rx:  0.86, ry:  0.45, size: 0.26, speed: 0.0055, phase: 4.4 },
+      { rx:  0.00, ry: -0.95, size: 0.28, speed: 0.0065, phase: 2.3 },
+      { rx: -0.52, ry: -0.82, size: 0.20, speed: 0.008, phase: 5.0 },
+      { rx:  0.56, ry: -0.80, size: 0.22, speed: 0.0075, phase: 0.9 }
+    ];
+
+    // Contador de FPS
+    let frameCount = 0;
+    let lastFpsUpdate = performance.now();
+    let lastCardsRenderTime = 0;
+
+    // ==========================================
+    // 1. INICIALIZACIÓN DE MEDIAPIPE (FACE + HAND LANDMARKER)
+    // ==========================================
+    async function initMediaPipe() {
+      try {
+        const filesetResolver = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+        );
+
+        // Inicializar ambos modelos en paralelo (Rostros + Manos)
+        const [faceModel, handModel] = await Promise.all([
+          FaceLandmarker.createFromOptions(filesetResolver, {
+            baseOptions: {
+              modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+              delegate: "GPU"
+            },
+            outputFaceBlendshapes: true,
+            runningMode: "VIDEO",
+            numFaces: MAX_FACES
+          }),
+          HandLandmarker.createFromOptions(filesetResolver, {
+            baseOptions: {
+              modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+              delegate: "GPU"
+            },
+            runningMode: "VIDEO",
+            numHands: 2
+          })
+        ]);
+
+        faceLandmarker = faceModel;
+        handLandmarker = handModel;
+
+        startCamBtnHero.disabled = false;
+        toggleCamBtn.disabled = false;
+        heroBtnSpinner.classList.add("hidden");
+        heroBtnText.textContent = "Activar Cámara Ahora";
+      } catch (err) {
+        console.error("Error al inicializar MediaPipe:", err);
+        showError("Error cargando los modelos de MediaPipe (Face & Hand). Verifica tu conexión.");
+        heroBtnText.textContent = "Error al cargar modelos";
+      }
+    }
+
+    initMediaPipe();
+
+    // ==========================================
+    // 1.B SINTETIZADOR MUSICAL CON WEB AUDIO API (300ms - 500ms)
+    // ==========================================
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+    }
+
+    /**
+     * Reproduce una nota musical (DO, RE, MI, FA, SOL) usando Web Audio API
+     * con envolvente suave de piano eléctrico o sintetizador cálido (~420 ms de duración).
+     */
+    function playMusicalNote(noteKey) {
+      if (!isAudioEnabled) return;
+      const noteInfo = MUSICAL_NOTES[noteKey];
+      if (!noteInfo) return;
+
+      ensureAudioContext();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const duration = 0.42; // 420 ms (dentro del rango requerido de 300 a 500 ms)
+      const freq = noteInfo.freq;
+
+      // Filtro paso bajo para dar calidez al sonido
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(synthTimbre === "piano" ? freq * 5.5 : freq * 3.8, now);
+      filter.frequency.exponentialRampToValueAtTime(freq * 1.4, now + duration);
+
+      // Ganancia principal con envolvente ADSR limpia sin clics
+      const masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.linearRampToValueAtTime(0.32, now + 0.018); // Attack rápido de 18ms
+      masterGain.gain.exponentialRampToValueAtTime(0.14, now + 0.14); // Decay a Sustain suave
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + duration); // Release a 420ms
+
+      // Oscilador Principal
+      const oscMain = audioCtx.createOscillator();
+      oscMain.type = synthTimbre === "piano" ? "triangle" : "sine";
+      oscMain.frequency.setValueAtTime(freq, now);
+
+      // Segundo Oscilador (Armónico / Octava suave para cuerpo de piano)
+      const oscHarmonic = audioCtx.createOscillator();
+      const harmGain = audioCtx.createGain();
+      if (synthTimbre === "piano") {
+        oscHarmonic.type = "sine";
+        oscHarmonic.frequency.setValueAtTime(freq * 2, now);
+        harmGain.gain.setValueAtTime(0.10, now);
+        harmGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.65);
+      } else {
+        // Detune cálido tipo synth analógico suave
+        oscHarmonic.type = "triangle";
+        oscHarmonic.frequency.setValueAtTime(freq * 1.004, now);
+        harmGain.gain.setValueAtTime(0.18, now);
+        harmGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.9);
+      }
+
+      oscMain.connect(filter);
+      oscHarmonic.connect(harmGain);
+      harmGain.connect(filter);
+      filter.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      oscMain.start(now);
+      oscHarmonic.start(now);
+      oscMain.stop(now + duration + 0.02);
+      oscHarmonic.stop(now + duration + 0.02);
+    }
+
+    // ==========================================
+    // 1.C DETECCIÓN DE DEDOS Y GESTOS MUSICALES (SECCIÓN 9.1 y 9.2)
+    // ==========================================
+    function dist3D(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y, (a.z || 0) - (b.z || 0));
+    }
+
+    /**
+     * Evalúa los 21 puntos de MediaPipe Hand Landmarker y determina con alta precisión
+     * qué dedos están levantados (extended) y cuáles están doblados (folded).
+     */
+    function detectExtendedFingers(handLandmarks) {
+      const wrist = handLandmarks[0];
+      const indexMcp = handLandmarks[5];
+      const middleMcp = handLandmarks[9];
+      const ringMcp = handLandmarks[13];
+      const pinkyMcp = handLandmarks[17];
+
+      // Tamaño de referencia de la palma para umbrales invariantes a escala
+      const palmScale = Math.max(
+        dist2D(wrist, middleMcp),
+        dist2D(indexMcp, pinkyMcp),
+        0.04
+      );
+
+      // Función auxiliar para dedos largos (Índice, Medio, Anular, Meñique):
+      // Combina distancia a la muñeca + altura relativa + alineación de falanges (MCP->PIP->TIP)
+      const isFingerExtended = (mcpIdx, pipIdx, dipIdx, tipIdx) => {
+        const mcp = handLandmarks[mcpIdx];
+        const pip = handLandmarks[pipIdx];
+        const dip = handLandmarks[dipIdx];
+        const tip = handLandmarks[tipIdx];
+
+        const dWristTip = dist2D(wrist, tip);
+        const dWristPip = dist2D(wrist, pip);
+        const dWristMcp = dist2D(wrist, mcp);
+
+        // Vector MCP -> PIP y PIP -> TIP (coseno del ángulo de curvatura del dedo)
+        const v1x = pip.x - mcp.x;
+        const v1y = pip.y - mcp.y;
+        const v2x = tip.x - pip.x;
+        const v2y = tip.y - pip.y;
+        const mag1 = Math.hypot(v1x, v1y) || 0.0001;
+        const mag2 = Math.hypot(v2x, v2y) || 0.0001;
+        const cosAngle = (v1x * v2x + v1y * v2y) / (mag1 * mag2);
+
+        // El dedo está extendido si la punta está más lejos de la muñeca que el PIP y las falanges están rectas
+        return (
+          dWristTip > dWristPip + palmScale * 0.14 &&
+          dWristTip > dWristMcp + palmScale * 0.32 &&
+          cosAngle > 0.45
+        );
+      };
+
+      const indexUp = isFingerExtended(5, 6, 7, 8);
+      const middleUp = isFingerExtended(9, 10, 11, 12);
+      const ringUp = isFingerExtended(13, 14, 15, 16);
+      const pinkyUp = isFingerExtended(17, 18, 19, 20);
+
+      // Detección robusta del Pulgar (landmarks 1, 2, 3, 4):
+      // Verifica que la punta del pulgar (4) esté alejada del MCP del meñique (17) y del MCP del medio (9),
+      // y que las falanges del pulgar estén alineadas (no dobladas hacia adentro de la palma).
+      const thumbCmc = handLandmarks[1];
+      const thumbMcp = handLandmarks[2];
+      const thumbIp = handLandmarks[3];
+      const thumbTip = handLandmarks[4];
+
+      const dThumbToPinkyMcp = dist2D(thumbTip, pinkyMcp);
+      const dThumbIpToPinkyMcp = dist2D(thumbIp, pinkyMcp);
+      const dThumbToIndexMcp = dist2D(thumbTip, indexMcp);
+
+      // Alineación angular del pulgar (CMC->MCP vs IP->TIP)
+      const tv1x = thumbMcp.x - thumbCmc.x;
+      const tv1y = thumbMcp.y - thumbCmc.y;
+      const tv2x = thumbTip.x - thumbIp.x;
+      const tv2y = thumbTip.y - thumbIp.y;
+      const tMag1 = Math.hypot(tv1x, tv1y) || 0.0001;
+      const tMag2 = Math.hypot(tv2x, tv2y) || 0.0001;
+      const thumbStraightCos = (tv1x * tv2x + tv1y * tv2y) / (tMag1 * tMag2);
+
+      const thumbUp =
+        dThumbToPinkyMcp > dThumbIpToPinkyMcp + palmScale * 0.10 &&
+        dThumbToPinkyMcp > palmScale * 0.92 &&
+        dThumbToIndexMcp > palmScale * 0.48 &&
+        thumbStraightCos > 0.35;
+
+      return {
+        index: indexUp,
+        middle: middleUp,
+        ring: ringUp,
+        pinky: pinkyUp,
+        thumb: thumbUp
+      };
+    }
+
+    /**
+     * Clasifica la combinación de dedos levantados en una de las 5 notas musicales exactas:
+     * - Solo índice -> DO
+     * - Índice + medio -> RE
+     * - Índice + medio + anular -> MI
+     * - Índice + medio + anular + meñique -> FA
+     * - Mano completa (5 dedos incluyendo pulgar) -> SOL
+     */
+    function classifyMusicalGesture(fingers) {
+      const { index, middle, ring, pinky, thumb } = fingers;
+
+      if (index && !middle && !ring && !pinky && !thumb) {
+        return "DO";
+      }
+      if (index && middle && !ring && !pinky && !thumb) {
+        return "RE";
+      }
+      if (index && middle && ring && !pinky && !thumb) {
+        return "MI";
+      }
+      if (index && middle && ring && pinky && !thumb) {
+        return "FA";
+      }
+      if (index && middle && ring && pinky && thumb) {
+        return "SOL";
+      }
+      return null; // Posición neutral u otra combinación
+    }
+
+    // ==========================================
+    // 2. GESTIÓN DE LA CÁMARA WEB
+    // ==========================================
+    async function startCamera() {
+      if (!faceLandmarker) return;
+      hideError();
+      ensureAudioContext();
+
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 60 }
+          },
+          audio: false
+        });
+
+        webcamVideo.srcObject = mediaStream;
+        await webcamVideo.play();
+
+        isCameraRunning = true;
+        webcamVideo.classList.remove("hidden");
+        cameraPlaceholder.classList.add("hidden");
+        liveBadge.classList.remove("hidden");
+        liveBadge.classList.add("flex");
+        calibrateBtn.disabled = false;
+
+        toggleCamText.textContent = "Desactivar Cámara";
+        toggleCamBtn.classList.replace("bg-red-600", "bg-gray-700");
+        toggleCamBtn.classList.replace("hover:bg-red-500", "hover:bg-gray-600");
+
+        faceTrackers = [];
+        calibrationBadge.classList.add("hidden");
+
+        resizeCanvas();
+        lastVideoTime = -1;
+        requestAnimationFrame(renderLoop);
+      } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
+        showError("Permiso de cámara denegado o dispositivo no disponible. Por favor permite el acceso al navegador.");
+      }
+    }
+
+    function stopCamera() {
+      isCameraRunning = false;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      webcamVideo.srcObject = null;
+      webcamVideo.classList.add("hidden");
+      cameraPlaceholder.classList.remove("hidden");
+      liveBadge.classList.add("hidden");
+      liveBadge.classList.remove("flex");
+      calibrateBtn.disabled = true;
+
+      toggleCamText.textContent = "Activar Cámara";
+      toggleCamBtn.classList.replace("bg-gray-700", "bg-red-600");
+      toggleCamBtn.classList.replace("hover:bg-gray-600", "hover:bg-red-500");
+
+      faceTrackers = [];
+      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      updateGlobalStatusUI(0, 0, 0);
+      updateGlobalTelemetryBars(0, 0);
+      renderMultiFaceCards([]);
+      updateHandMusicUI(false, null, null);
+      fpsCounter.textContent = "0 FPS";
+      facesCountBadge.textContent = `0 / ${MAX_FACES} rostros`;
+      handsCountBadge.textContent = "Mano: No";
+    }
+
+    function resizeCanvas() {
+      if (webcamVideo.videoWidth && webcamVideo.videoHeight) {
+        overlayCanvas.width = webcamVideo.videoWidth;
+        overlayCanvas.height = webcamVideo.videoHeight;
+      } else {
+        const rect = viewportContainer.getBoundingClientRect();
+        overlayCanvas.width = rect.width;
+        overlayCanvas.height = rect.height;
+      }
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+
+    // ==========================================
+    // 3. CREACIÓN Y EMPAREJAMIENTO DE RASTREADORES POR ROSTRO
+    // ==========================================
+    function createFaceTracker(id, noseX, noseY) {
+      return {
+        id,
+        centerX: noseX,
+        centerY: noseY,
+        lastSeenFrame: 0,
+
+        // Calibración geométrica neutral propia de esta persona
+        baseline: {
+          calibrated: false,
+          autoCalibFrames: 0,
+          innerBrowRatio: 0.255,
+          browToEyeRatio: 0.285,
+          eyeOpenRatio: 0.115,
+          browSlopeAngle: 0.12,
+          mouthWidthRatio: 0.72
+        },
+        lastRawGeometry: null,
+
+        // Puntajes suavizados (EMA)
+        smoothedAnger: 0,
+        smoothedHappy: 0,
+
+        // Estados activos e histéresis de Enojo
+        isAngry: false,
+        angryHoldFrames: 0,
+        angryRelaxFrames: 0,
+        veinSpring: { scale: 0, velocity: 0, opacity: 0 },
+
+        // Estados activos e histéresis de Felicidad (Ojos de Estrella)
+        isHappy: false,
+        happyHoldFrames: 0,
+        happyRelaxFrames: 0,
+        starSpring: { scale: 0, velocity: 0, opacity: 0 },
+
+        // Posiciones suavizadas con LERP (Anclaje de cabeza + ambos ojos + mejillas)
+        anchors: {
+          initialized: false,
+          veinX: 0,
+          veinY: 0,
+          veinRadius: 55,
+          rollAngle: 0,
+          faceWidth: 120,
+          headCenterX: 0,
+          headCenterY: 0,
+          leftEye: { x: 0, y: 0, r: 18 },
+          rightEye: { x: 0, y: 0, r: 18 },
+          leftCheek: { x: 0, y: 0 },
+          rightCheek: { x: 0, y: 0 }
+        }
+      };
+    }
+
+    /**
+     * Empareja los rostros detectados en el frame actual con los rastreadores existentes
+     * según cercanía espacial de la nariz (landmark 1) para mantener animaciones fluidas.
+     */
+    function matchFacesToTrackers(detectedFacesLandmarks, frameTick) {
+      const usedTrackerIds = new Set();
+      const matchedTrackers = [];
+
+      for (let i = 0; i < detectedFacesLandmarks.length; i++) {
+        const lm = detectedFacesLandmarks[i];
+        const noseX = lm[1].x;
+        const noseY = lm[1].y;
+
+        let bestTracker = null;
+        let bestDist = 0.18; // Distancia máxima normalizada para asociar la misma cara
+
+        for (const tracker of faceTrackers) {
+          if (usedTrackerIds.has(tracker.id)) continue;
+          const d = Math.hypot(noseX - tracker.centerX, noseY - tracker.centerY);
+          if (d < bestDist) {
+            bestDist = d;
+            bestTracker = tracker;
+          }
+        }
+
+        if (!bestTracker) {
+          bestTracker = createFaceTracker(nextTrackerId++, noseX, noseY);
+          faceTrackers.push(bestTracker);
+        }
+
+        bestTracker.centerX = noseX;
+        bestTracker.centerY = noseY;
+        bestTracker.lastSeenFrame = frameTick;
+        usedTrackerIds.add(bestTracker.id);
+        matchedTrackers.push({ tracker: bestTracker, landmarks: lm, faceIndex: i });
+      }
+
+      // Conservar por unos pocos frames los trackers que acaban de salir por si hay oclusión breve
+      faceTrackers = faceTrackers.filter(t => (frameTick - t.lastSeenFrame) <= 10);
+
+      // Ordenar de izquierda a derecha en pantalla (recordando que X en pantalla es 1 - centerX)
+      matchedTrackers.sort((a, b) => (1 - a.tracker.centerX) - (1 - b.tracker.centerX));
+      return matchedTrackers;
+    }
+
+    // ==========================================
+    // 4. ANÁLISIS BIOMÉTRICO DUAL: ENOJO 💢 Y FELICIDAD ✨
+    // ==========================================
+    function dist2D(p1, p2) {
+      return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+    }
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function analyzeFaceEmotions(tracker, landmarks, blendshapesCategories) {
+      const bsMap = {};
+      if (blendshapesCategories) {
+        for (const item of blendshapesCategories) {
+          bsMap[item.categoryName] = item.score;
+        }
+      }
+
+      // --- BLENDSHAPES DE ENOJO ---
+      const browDownL = bsMap["browDownLeft"] || 0;
+      const browDownR = bsMap["browDownRight"] || 0;
+      const eyeSquintL = bsMap["eyeSquintLeft"] || 0;
+      const eyeSquintR = bsMap["eyeSquintRight"] || 0;
+      const noseSneerL = bsMap["noseSneerLeft"] || 0;
+      const noseSneerR = bsMap["noseSneerRight"] || 0;
+
+      // --- BLENDSHAPES DE FELICIDAD / OJOS DE ESTRELLA ---
+      const smileL = bsMap["mouthSmileLeft"] || 0;
+      const smileR = bsMap["mouthSmileRight"] || 0;
+      const cheekSquintL = bsMap["cheekSquintLeft"] || 0;
+      const cheekSquintR = bsMap["cheekSquintRight"] || 0;
+      const browInnerUp = bsMap["browInnerUp"] || 0;
+      const browOuterUpL = bsMap["browOuterUpLeft"] || 0;
+      const browOuterUpR = bsMap["browOuterUpRight"] || 0;
+      const eyeWideL = bsMap["eyeWideLeft"] || 0;
+      const eyeWideR = bsMap["eyeWideRight"] || 0;
+      const jawOpen = bsMap["jawOpen"] || 0;
+
+      // --- PARPADEO ---
+      const eyeBlinkL = bsMap["eyeBlinkLeft"] || 0;
+      const eyeBlinkR = bsMap["eyeBlinkRight"] || 0;
+
+      // --- GEOMETRÍA NORMALIZADA DEL ROSTRO ---
+      const leftEyeOuter = landmarks[33];
+      const rightEyeOuter = landmarks[263];
+      const interocularDist = Math.max(dist2D(leftEyeOuter, rightEyeOuter), 0.001);
+
+      const leftBrowInner = landmarks[107];
+      const rightBrowInner = landmarks[336];
+      const innerBrowRatio = dist2D(leftBrowInner, rightBrowInner) / interocularDist;
+
+      const leftUpperLid = landmarks[159];
+      const rightUpperLid = landmarks[386];
+      const leftLowerLid = landmarks[145];
+      const rightLowerLid = landmarks[374];
+
+      const leftBrowMid = landmarks[105];
+      const rightBrowMid = landmarks[334];
+
+      const leftBrowEyeDist = (dist2D(leftBrowInner, leftUpperLid) + dist2D(leftBrowMid, leftUpperLid)) * 0.5;
+      const rightBrowEyeDist = (dist2D(rightBrowInner, rightUpperLid) + dist2D(rightBrowMid, rightUpperLid)) * 0.5;
+      const browToEyeRatio = ((leftBrowEyeDist + rightBrowEyeDist) * 0.5) / interocularDist;
+
+      const leftEyeOpen = dist2D(leftUpperLid, leftLowerLid) / interocularDist;
+      const rightEyeOpen = dist2D(rightUpperLid, rightLowerLid) / interocularDist;
+      const eyeOpenRatio = (leftEyeOpen + rightEyeOpen) * 0.5;
+
+      const leftBrowSlope = (leftBrowInner.y - leftBrowMid.y) / interocularDist;
+      const rightBrowSlope = (rightBrowInner.y - rightBrowMid.y) / interocularDist;
+      const browSlopeAngle = (leftBrowSlope + rightBrowSlope) * 0.5;
+
+      // Geometría de la sonrisa (Comisuras labiales 61 y 291 respecto al centro de los labios 13 y 14)
+      const mouthLeft = landmarks[61];
+      const mouthRight = landmarks[291];
+      const upperLipCenter = landmarks[13];
+      const lowerLipCenter = landmarks[14];
+      const mouthCenterY = (upperLipCenter.y + lowerLipCenter.y) * 0.5;
+      const cornersAvgY = (mouthLeft.y + mouthRight.y) * 0.5;
+
+      const mouthWidthRatio = dist2D(mouthLeft, mouthRight) / interocularDist;
+      // Cuando una persona sonríe, las comisuras suben (cornersAvgY es menor que mouthCenterY)
+      const mouthCornerLift = clamp((mouthCenterY - cornersAvgY) / (interocularDist * 0.12), 0, 1);
+
+      tracker.lastRawGeometry = {
+        innerBrowRatio,
+        browToEyeRatio,
+        eyeOpenRatio,
+        browSlopeAngle,
+        mouthWidthRatio
+      };
+
+      const base = tracker.baseline;
+      const blendBrowDown = (browDownL + browDownR) * 0.5;
+      const blendSmile = (smileL + smileR) * 0.5;
+
+      // Autocalibración individual de este rostro durante los primeros 20 frames si está neutral
+      if (!base.calibrated && blendBrowDown < 0.25 && blendSmile < 0.25 && base.autoCalibFrames < 20) {
+        const alpha = base.autoCalibFrames === 0 ? 1.0 : 0.18;
+        base.innerBrowRatio = base.innerBrowRatio * (1 - alpha) + innerBrowRatio * alpha;
+        base.browToEyeRatio = base.browToEyeRatio * (1 - alpha) + browToEyeRatio * alpha;
+        base.eyeOpenRatio = base.eyeOpenRatio * (1 - alpha) + eyeOpenRatio * alpha;
+        base.browSlopeAngle = base.browSlopeAngle * (1 - alpha) + browSlopeAngle * alpha;
+        base.mouthWidthRatio = base.mouthWidthRatio * (1 - alpha) + mouthWidthRatio * alpha;
+        base.autoCalibFrames++;
+        if (base.autoCalibFrames === 20) {
+          base.calibrated = true;
+        }
+      }
+
+      // ==========================================
+      // CÁLCULO DE ENOJO (0.0 a 1.0)
+      // ==========================================
+      const blendEyeSquint = (eyeSquintL + eyeSquintR) * 0.5;
+      const blendSneer = (noseSneerL + noseSneerR) * 0.5;
+
+      const furrowCompression = clamp((base.innerBrowRatio - innerBrowRatio) / (base.innerBrowRatio * 0.16), 0, 1);
+      const browDropGeo = clamp((base.browToEyeRatio - browToEyeRatio) / (base.browToEyeRatio * 0.20), 0, 1);
+      const slopeIncrease = clamp((browSlopeAngle - base.browSlopeAngle) / 0.08, 0, 1);
+
+      const geometryAngerScore = clamp(
+        furrowCompression * 0.35 + browDropGeo * 0.40 + slopeIncrease * 0.25,
+        0,
+        1
+      );
+
+      const isFullBlink = (eyeBlinkL > 0.68 && eyeBlinkR > 0.68 && blendBrowDown < 0.22);
+      const eyelidNarrowing = isFullBlink
+        ? 0
+        : clamp((base.eyeOpenRatio - eyeOpenRatio) / (base.eyeOpenRatio * 0.45), 0, 1);
+
+      const combinedSquintScore = isFullBlink
+        ? 0
+        : clamp(blendEyeSquint * 0.65 + eyelidNarrowing * 0.35, 0, 1);
+
+      // Si está sonriendo abiertamente o levantando las cejas con alegría, penalizar el enojo
+      const happyPenaltyOnAnger = blendSmile * 0.55 + browInnerUp * 0.35;
+
+      let rawAngerScore =
+        blendBrowDown * 0.48 +
+        geometryAngerScore * 0.32 +
+        combinedSquintScore * 0.15 +
+        blendSneer * 0.08 -
+        happyPenaltyOnAnger;
+
+      rawAngerScore = clamp(rawAngerScore, 0, 1);
+
+      // ==========================================
+      // CÁLCULO DE FELICIDAD / OJOS DE ESTRELLA (0.0 a 1.0)
+      // ==========================================
+      const blendCheekRaise = (cheekSquintL + cheekSquintR) * 0.5;
+      const blendEyeExcitement = clamp(
+        (eyeWideL + eyeWideR) * 0.4 + browInnerUp * 0.4 + (browOuterUpL + browOuterUpR) * 0.25,
+        0,
+        1
+      );
+      const mouthWidthExpansion = clamp((mouthWidthRatio - base.mouthWidthRatio) / (base.mouthWidthRatio * 0.18), 0, 1);
+      const happyOpenMouthJoy = clamp(jawOpen * 0.65, 0, 0.35) * (blendSmile > 0.25 ? 1 : 0);
+
+      // Si la persona tiene el ceño muy fruncido de enojo, no activar felicidad
+      const angerPenaltyOnHappy = blendBrowDown * 0.60;
+
+      let rawHappyScore =
+        blendSmile * 0.52 +
+        mouthCornerLift * 0.18 +
+        mouthWidthExpansion * 0.12 +
+        blendCheekRaise * 0.12 +
+        blendEyeExcitement * 0.12 +
+        happyOpenMouthJoy -
+        angerPenaltyOnHappy;
+
+      rawHappyScore = clamp(rawHappyScore, 0, 1);
+
+      return {
+        rawAngerScore,
+        rawHappyScore
+      };
+    }
+
+    // ==========================================
+    // 5. CÁLCULO DE POSICIONES ESPACIALES (CABEZA, IRIS/PUPILAS Y MEJILLAS)
+    // ==========================================
+    function updateFaceAnchors(tracker, landmarks, canvasWidth, canvasHeight) {
+      const toScreen = (lm) => ({
+        x: (1 - lm.x) * canvasWidth,
+        y: lm.y * canvasHeight
+      });
+
+      const foreheadTop = toScreen(landmarks[10]);
+      const leftEyeOuter = toScreen(landmarks[33]);
+      const rightEyeOuter = toScreen(landmarks[263]);
+      const leftEyeInner = toScreen(landmarks[133]);
+      const rightEyeInner = toScreen(landmarks[362]);
+      const leftUpperLid = toScreen(landmarks[159]);
+      const leftLowerLid = toScreen(landmarks[145]);
+      const rightUpperLid = toScreen(landmarks[386]);
+      const rightLowerLid = toScreen(landmarks[374]);
+
+      // Centro preciso de cada ojo / iris (usando landmarks de iris 468 y 473 si están disponibles)
+      const leftIrisCenter = landmarks[468]
+        ? toScreen(landmarks[468])
+        : {
+            x: (leftEyeOuter.x + leftEyeInner.x) * 0.5,
+            y: (leftUpperLid.y + leftLowerLid.y) * 0.5
+          };
+
+      const rightIrisCenter = landmarks[473]
+        ? toScreen(landmarks[473])
+        : {
+            x: (rightEyeOuter.x + rightEyeInner.x) * 0.5,
+            y: (rightUpperLid.y + rightLowerLid.y) * 0.5
+          };
+
+      // Ancho de cada ojo para escalar la estrella de la pupila proporcionalmente
+      const leftEyeWidth = Math.hypot(leftEyeOuter.x - leftEyeInner.x, leftEyeOuter.y - leftEyeInner.y);
+      const rightEyeWidth = Math.hypot(rightEyeOuter.x - rightEyeInner.x, rightEyeOuter.y - rightEyeInner.y);
+
+      const leftStarRadius = clamp(leftEyeWidth * 0.54 * userScaleMultiplier, 8, 95);
+      const rightStarRadius = clamp(rightEyeWidth * 0.54 * userScaleMultiplier, 8, 95);
+
+      // Posición de las mejillas para el rubor anime (landmarks 116 y 345)
+      const leftCheekPt = toScreen(landmarks[116]);
+      const rightCheekPt = toScreen(landmarks[345]);
+
+      // Ancho del rostro y ángulo Roll en pantalla
+      const faceWidth = Math.hypot(
+        rightEyeOuter.x - leftEyeOuter.x,
+        rightEyeOuter.y - leftEyeOuter.y
+      );
+
+      const screenLeftEye = leftEyeOuter.x < rightEyeOuter.x ? leftEyeOuter : rightEyeOuter;
+      const screenRightEye = leftEyeOuter.x < rightEyeOuter.x ? rightEyeOuter : leftEyeOuter;
+
+      const rollAngle = Math.atan2(
+        screenRightEye.y - screenLeftEye.y,
+        screenRightEye.x - screenLeftEye.x
+      );
+
+      const rightVec = { x: Math.cos(rollAngle), y: Math.sin(rollAngle) };
+      const upVec = { x: Math.sin(rollAngle), y: -Math.cos(rollAngle) };
+
+      // Posición de la Vena de Enojo (arriba a la derecha de la cabeza de esta persona)
+      const offsetRight = faceWidth * 0.68;
+      const offsetUp = faceWidth * 0.36;
+
+      let targetVeinX = foreheadTop.x + rightVec.x * offsetRight + upVec.x * offsetUp;
+      let targetVeinY = foreheadTop.y + rightVec.y * offsetRight + upVec.y * offsetUp;
+      const targetVeinRadius = clamp(faceWidth * 0.38 * userScaleMultiplier, 20, 155);
+
+      const margin = targetVeinRadius * 0.85;
+      targetVeinX = clamp(targetVeinX, margin, canvasWidth - margin);
+      targetVeinY = clamp(targetVeinY, margin, canvasHeight - margin);
+
+      const headCenterX = (leftIrisCenter.x + rightIrisCenter.x) * 0.5;
+      const headCenterY = (leftIrisCenter.y + rightIrisCenter.y) * 0.5;
+
+      // Suavizado LERP para que tanto la vena como las estrellas en las pupilas sigan al usuario sin vibración
+      const a = tracker.anchors;
+      const lerpVein = 0.34;
+      const lerpEye = 0.52; // Respuesta más rápida en los ojos para que las estrellas no se atrasen al mover la cabeza
+
+      if (!a.initialized) {
+        a.veinX = targetVeinX;
+        a.veinY = targetVeinY;
+        a.veinRadius = targetVeinRadius;
+        a.rollAngle = rollAngle;
+        a.faceWidth = faceWidth;
+        a.headCenterX = headCenterX;
+        a.headCenterY = headCenterY;
+        a.leftEye = { x: leftIrisCenter.x, y: leftIrisCenter.y, r: leftStarRadius };
+        a.rightEye = { x: rightIrisCenter.x, y: rightIrisCenter.y, r: rightStarRadius };
+        a.leftCheek = { x: leftCheekPt.x, y: leftCheekPt.y };
+        a.rightCheek = { x: rightCheekPt.x, y: rightCheekPt.y };
+        a.initialized = true;
+      } else {
+        a.veinX += (targetVeinX - a.veinX) * lerpVein;
+        a.veinY += (targetVeinY - a.veinY) * lerpVein;
+        a.veinRadius += (targetVeinRadius - a.veinRadius) * lerpVein;
+        a.rollAngle += (rollAngle - a.rollAngle) * lerpVein;
+        a.faceWidth += (faceWidth - a.faceWidth) * lerpVein;
+        a.headCenterX += (headCenterX - a.headCenterX) * lerpEye;
+        a.headCenterY += (headCenterY - a.headCenterY) * lerpEye;
+
+        a.leftEye.x += (leftIrisCenter.x - a.leftEye.x) * lerpEye;
+        a.leftEye.y += (leftIrisCenter.y - a.leftEye.y) * lerpEye;
+        a.leftEye.r += (leftStarRadius - a.leftEye.r) * lerpEye;
+
+        a.rightEye.x += (rightIrisCenter.x - a.rightEye.x) * lerpEye;
+        a.rightEye.y += (rightIrisCenter.y - a.rightEye.y) * lerpEye;
+        a.rightEye.r += (rightStarRadius - a.rightEye.r) * lerpEye;
+
+        a.leftCheek.x += (leftCheekPt.x - a.leftCheek.x) * lerpEye;
+        a.leftCheek.y += (leftCheekPt.y - a.leftCheek.y) * lerpEye;
+        a.rightCheek.x += (rightCheekPt.x - a.rightCheek.x) * lerpEye;
+        a.rightCheek.y += (rightCheekPt.y - a.rightCheek.y) * lerpEye;
+      }
+
+      return a;
+    }
+
+    // ==========================================
+    // 6. RENDERIZADO DE EFECTOS: VENA DE ENOJO 💢 Y OJOS DE ESTRELLA ✨
+    // ==========================================
+
+    /**
+     * Dibuja una estrella anime de 4 puntas curvas (✦) centrada en (0,0)
+     */
+    function traceFourPointStarPath(ctx, outerRadius, innerRadius) {
+      ctx.beginPath();
+      ctx.moveTo(0, -outerRadius);
+      ctx.quadraticCurveTo(innerRadius, -innerRadius, outerRadius, 0);
+      ctx.quadraticCurveTo(innerRadius, innerRadius, 0, outerRadius);
+      ctx.quadraticCurveTo(-innerRadius, innerRadius, -outerRadius, 0);
+      ctx.quadraticCurveTo(-innerRadius, -innerRadius, 0, -outerRadius);
+      ctx.closePath();
+    }
+
+    /**
+     * Renderiza el efecto completo de "Ojos de Estrella" (Inspirado en la imagen de referencia):
+     * - Pupilas de estrella dorada brillante de 4 puntas sobre ambos ojos con reflejos blancos anime
+     * - Rubor rosado anime con rayitas oblicuas en las mejillas
+     * - Destellos y cruces de luz dorada flotando alrededor del rostro
+     */
+    function drawAnimeStarryEyes(ctx, anchors, starSpring, timeNow, trackerId) {
+      if (starSpring.scale <= 0.02 || starSpring.opacity <= 0.02) return;
+
+      ctx.save();
+      const alpha = clamp(starSpring.opacity, 0, 1);
+      ctx.globalAlpha = alpha;
+
+      // 1. DIBUJAR RUBOR ANIME EN AMBAS MEJILLAS (Blush rosado + rayitas manga como en la referencia)
+      const drawCheekBlush = (cheekPt, radius, angle) => {
+        ctx.save();
+        ctx.translate(cheekPt.x, cheekPt.y);
+        ctx.rotate(angle);
+
+        // Resplandor suave rosado/coral
+        const grad = ctx.createRadialGradient(0, 0, radius * 0.1, 0, 0, radius);
+        grad.addColorStop(0, "rgba(255, 105, 135, 0.42)");
+        grad.addColorStop(1, "rgba(255, 105, 135, 0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, radius * 1.25, radius * 0.72, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pequeñas líneas diagonales de rubor anime (////)
+        ctx.strokeStyle = "rgba(244, 63, 94, 0.55)";
+        ctx.lineWidth = Math.max(1.5, radius * 0.08);
+        ctx.lineCap = "round";
+        for (let i = -2; i <= 2; i++) {
+          const lx = i * (radius * 0.28);
+          ctx.beginPath();
+          ctx.moveTo(lx + radius * 0.08, -radius * 0.24);
+          ctx.lineTo(lx - radius * 0.08, radius * 0.24);
+          ctx.stroke();
+        }
+        ctx.restore();
+      };
+
+      const blushRadius = anchors.faceWidth * 0.22 * Math.min(1.1, starSpring.scale);
+      drawCheekBlush(anchors.leftCheek, blushRadius, anchors.rollAngle);
+      drawCheekBlush(anchors.rightCheek, blushRadius, anchors.rollAngle);
+
+      // 2. DIBUJAR LAS ESTRELLAS DORADAS EN CADA OJO (Pupilas de Estrella Anime)
+      const pulse = 1 + Math.sin(timeNow * 0.012 + trackerId) * 0.08;
+      const subtleTilt = Math.sin(timeNow * 0.005 + trackerId) * 0.10;
+
+      const drawSingleStarEye = (eyeAnchor, isRightEye) => {
+        ctx.save();
+        ctx.translate(eyeAnchor.x, eyeAnchor.y);
+        ctx.rotate(anchors.rollAngle + subtleTilt * (isRightEye ? -1 : 1));
+
+        const r = Math.max(4, eyeAnchor.r * starSpring.scale * pulse);
+
+        // Halo dorado cálido en el iris detrás de la estrella
+        const irisGlow = ctx.createRadialGradient(0, 0, r * 0.15, 0, 0, r * 1.45);
+        irisGlow.addColorStop(0, "rgba(255, 250, 190, 0.95)");
+        irisGlow.addColorStop(0.45, "rgba(250, 204, 21, 0.75)");
+        irisGlow.addColorStop(0.8, "rgba(217, 119, 6, 0.35)");
+        irisGlow.addColorStop(1, "rgba(217, 119, 6, 0)");
+
+        ctx.fillStyle = irisGlow;
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 1.45, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Sombra luminosa dorada intensa
+        ctx.shadowColor = "rgba(250, 204, 21, 0.95)";
+        ctx.shadowBlur = r * 0.75;
+
+        // Estrella principal de 4 puntas (Dorado -> Blanco brillante en el centro)
+        const starGrad = ctx.createRadialGradient(0, 0, r * 0.05, 0, 0, r * 1.15);
+        starGrad.addColorStop(0, "#FFFFFF");
+        starGrad.addColorStop(0.35, "#FEF08A");
+        starGrad.addColorStop(0.75, "#FACC15");
+        starGrad.addColorStop(1, "#CA8A04");
+
+        traceFourPointStarPath(ctx, r * 1.18, r * 0.28);
+        ctx.fillStyle = starGrad;
+        ctx.fill();
+
+        // Contorno cálido marrón/dorado estilo anime tradicional para definir la estrella dentro del ojo
+        ctx.lineWidth = Math.max(1.5, r * 0.11);
+        ctx.strokeStyle = "#854D0E";
+        ctx.stroke();
+
+        // Núcleo blanco ultra brillante
+        ctx.shadowBlur = 0;
+        traceFourPointStarPath(ctx, r * 0.55, r * 0.13);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+
+        // Reflejos especulares blancos clásicos de ojos anime (arriba-izquierda y abajo-derecha)
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(-r * 0.48, -r * 0.45, r * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(r * 0.46, r * 0.44, r * 0.13, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      };
+
+      drawSingleStarEye(anchors.leftEye, false);
+      drawSingleStarEye(anchors.rightEye, true);
+
+      // 3. DESTELLOS Y CRUCES DE LUZ DORADA ALREDEDOR DE LA CABEZA (Bokeh & Sparkles de la imagen de referencia)
+      for (let i = 0; i < SPARKLE_OFFSETS.length; i++) {
+        const sp = SPARKLE_OFFSETS[i];
+        const twinkle = (Math.sin(timeNow * sp.speed + sp.phase + trackerId) + 1) * 0.5; // 0 a 1
+        if (twinkle < 0.15) continue;
+
+        const sx = anchors.headCenterX + sp.rx * anchors.faceWidth;
+        const sy = anchors.headCenterY + sp.ry * anchors.faceWidth + Math.sin(timeNow * 0.003 + i) * 6;
+        const sRadius = anchors.faceWidth * sp.size * (0.45 + twinkle * 0.65) * starSpring.scale * userScaleMultiplier;
+
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.globalAlpha = alpha * (0.4 + twinkle * 0.6);
+
+        // Círculo bokeh dorado suave detrás del destello
+        const bokehGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, sRadius * 1.2);
+        bokehGrad.addColorStop(0, "rgba(254, 240, 138, 0.75)");
+        bokehGrad.addColorStop(0.5, "rgba(250, 204, 21, 0.35)");
+        bokehGrad.addColorStop(1, "rgba(250, 204, 21, 0)");
+        ctx.fillStyle = bokehGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, sRadius * 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Estrella de destello de 4 agujas largas
+        traceFourPointStarPath(ctx, sRadius, sRadius * 0.14);
+        ctx.fillStyle = "#FEF9C3";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    /**
+     * Renderiza la Vena de Enojo Anime en la esquina superior derecha de la cabeza del rostro correspondiente
+     */
+    function drawAnimeVein(ctx, anchors, veinSpring, timeNow, isAngryActive, smoothedAngerScore) {
+      if (veinSpring.scale <= 0.02 || veinSpring.opacity <= 0.02) return;
+
+      ctx.save();
+
+      const heartbeat = Math.sin(timeNow * 0.014) * 0.065 + Math.max(0, Math.sin(timeNow * 0.028)) * 0.05;
+      const jitterX = (Math.sin(timeNow * 0.09) * 1.4) * (isAngryActive ? 1 : 0);
+      const jitterY = (Math.cos(timeNow * 0.11) * 1.4) * (isAngryActive ? 1 : 0);
+
+      const finalScale = Math.max(0.01, veinSpring.scale * (1 + heartbeat));
+      const size = anchors.veinRadius * finalScale;
+
+      ctx.translate(anchors.veinX + jitterX, anchors.veinY + jitterY);
+      ctx.rotate(anchors.rollAngle - 0.12);
+      ctx.globalAlpha = clamp(veinSpring.opacity, 0, 1);
+
+      ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+      ctx.shadowBlur = size * 0.18;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = size * 0.06;
+
+      const unit = size / 50;
+      ctx.scale(unit, unit);
+
+      if (veinStyle === "anime_angled") {
+        const drawFourAngledBranches = () => {
+          ctx.beginPath();
+          ctx.moveTo(-36, -12);
+          ctx.quadraticCurveTo(-12, -15, -9, -18);
+          ctx.quadraticCurveTo(-6, -21, -15, -39);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(9, -41);
+          ctx.quadraticCurveTo(14, -18, 18, -16);
+          ctx.quadraticCurveTo(22, -14, 41, -22);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-31, 16);
+          ctx.quadraticCurveTo(-9, 10, -4, 14);
+          ctx.quadraticCurveTo(0, 18, -1, 39);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(42, 6);
+          ctx.quadraticCurveTo(18, 10, 16, 15);
+          ctx.quadraticCurveTo(14, 20, 24, 36);
+          ctx.stroke();
+        };
+
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        ctx.strokeStyle = "#2A080C";
+        ctx.lineWidth = 15.5;
+        drawFourAngledBranches();
+
+        ctx.shadowColor = "transparent";
+        ctx.strokeStyle = "#FF2424";
+        ctx.lineWidth = 10.5;
+        drawFourAngledBranches();
+
+        ctx.strokeStyle = "#FF6B6B";
+        ctx.lineWidth = 2.6;
+        drawFourAngledBranches();
+      } else {
+        const drawFourCurvedArcs = () => {
+          ctx.beginPath();
+          ctx.moveTo(-27, -38);
+          ctx.bezierCurveTo(-14, -10, 14, -10, 27, -38);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(38, -27);
+          ctx.bezierCurveTo(10, -14, 10, 14, 38, 27);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-27, 38);
+          ctx.bezierCurveTo(-14, 10, 14, 10, 27, 38);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-38, -27);
+          ctx.bezierCurveTo(-10, -14, -10, 14, -38, 27);
+          ctx.stroke();
+        };
+
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        ctx.strokeStyle = "rgba(30, 5, 5, 0.85)";
+        ctx.lineWidth = 15;
+        drawFourCurvedArcs();
+
+        ctx.shadowColor = "transparent";
+        ctx.strokeStyle = "#F4362C";
+        ctx.lineWidth = 11.5;
+        drawFourCurvedArcs();
+      }
+
+      if (isAngryActive && smoothedAngerScore > angerThreshold + 0.12) {
+        ctx.strokeStyle = "#FF2A2A";
+        ctx.lineWidth = 3.5;
+        const popPulse = 46 + Math.sin(timeNow * 0.03) * 4;
+        for (let i = 0; i < 4; i++) {
+          const a = (i * Math.PI) / 2 + Math.PI / 4;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a) * (popPulse - 5), Math.sin(a) * (popPulse - 5));
+          ctx.lineTo(Math.cos(a) * (popPulse + 4), Math.sin(a) * (popPulse + 4));
+          ctx.stroke();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    // ==========================================
+    // 7. DIBUJO DE DEPURACIÓN MULTI-ROSTRO (OPCIONAL)
+    // ==========================================
+    function drawDebugFaceOverlay(ctx, landmarks, w, h, tracker, personLabel) {
+      ctx.save();
+      const toScreen = (idx) => ({
+        x: (1 - landmarks[idx].x) * w,
+        y: landmarks[idx].y * h
+      });
+
+      const leftBrowIndices = [70, 63, 105, 66, 107, 55, 65, 52, 53, 46];
+      const rightBrowIndices = [300, 293, 334, 296, 336, 285, 295, 282, 283, 276];
+      const leftEyeIndices = [33, 160, 158, 133, 153, 144, 33];
+      const rightEyeIndices = [263, 387, 385, 362, 380, 373, 263];
+      const smileIndices = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
+
+      let strokeCol = "#38BDF8";
+      if (tracker.isAngry) strokeCol = "#FF2A2A";
+      else if (tracker.isHappy) strokeCol = "#FACC15";
+
+      ctx.strokeStyle = strokeCol;
+      ctx.lineWidth = 2;
+
+      const drawPath = (indices) => {
+        ctx.beginPath();
+        indices.forEach((idx, i) => {
+          const pt = toScreen(idx);
+          if (i === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+      };
+
+      drawPath(leftBrowIndices);
+      drawPath(rightBrowIndices);
+      drawPath(leftEyeIndices);
+      drawPath(rightEyeIndices);
+      drawPath(smileIndices);
+
+      // Etiqueta flotante del número de rostro en modo debug
+      const forehead = toScreen(10);
+      ctx.font = "bold 12px Inter, sans-serif";
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(forehead.x - 38, forehead.y - 34, 76, 20);
+      ctx.fillStyle = strokeCol;
+      ctx.textAlign = "center";
+      ctx.fillText(personLabel, forehead.x, forehead.y - 20);
+
+      ctx.restore();
+    }
+
+    // ==========================================
+    // 7.B RENDERIZADO DE MANO, DEDOS ACTIVOS Y ONDAS MUSICALES EN EL CANVAS
+    // ==========================================
+    function drawHandAndMusicalEffects(ctx, handLandmarks, fingers, activeNoteKey, w, h, now) {
+      ctx.save();
+      const toScreen = (lm) => ({
+        x: (1 - lm.x) * w,
+        y: lm.y * h
+      });
+
+      const pts = handLandmarks.map(toScreen);
+      const noteInfo = activeNoteKey ? MUSICAL_NOTES[activeNoteKey] : null;
+      const primaryColor = noteInfo ? noteInfo.color : "#38BDF8";
+
+      // 1. Dibujar conexiones del esqueleto de la mano (21 puntos)
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = noteInfo ? noteInfo.color : "rgba(56, 189, 248, 0.72)";
+      ctx.shadowColor = primaryColor;
+      ctx.shadowBlur = noteInfo ? 12 : 4;
+
+      for (const [i, j] of HAND_CONNECTIONS) {
+        ctx.beginPath();
+        ctx.moveTo(pts[i].x, pts[i].y);
+        ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.stroke();
+      }
+
+      // 2. Dibujar los 21 puntos de referencia de la mano
+      const tipMap = {
+        4: fingers.thumb,
+        8: fingers.index,
+        12: fingers.middle,
+        16: fingers.ring,
+        20: fingers.pinky
+      };
+
+      for (let i = 0; i < pts.length; i++) {
+        const isTip = i in tipMap;
+        const isExtendedTip = isTip && tipMap[i];
+
+        ctx.beginPath();
+        ctx.arc(pts[i].x, pts[i].y, isExtendedTip ? 8.5 : (isTip ? 5.5 : 4), 0, Math.PI * 2);
+
+        if (isExtendedTip) {
+          ctx.fillStyle = primaryColor;
+          ctx.shadowColor = primaryColor;
+          ctx.shadowBlur = 16;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.stroke();
+        } else {
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = isTip ? "#94A3B8" : "#E2E8F0";
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    /**
+     * Dibuja las ondas expansivas de sonido y la insignia flotante de la nota sobre la mano
+     */
+    function drawMusicalRipplesOverlay(ctx, now) {
+      for (let i = handMusicState.ripples.length - 1; i >= 0; i--) {
+        const rp = handMusicState.ripples[i];
+        const elapsed = now - rp.startTime;
+        const progress = elapsed / rp.duration;
+
+        if (progress >= 1) {
+          handMusicState.ripples.splice(i, 1);
+          continue;
+        }
+
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentRadius = rp.startRadius + (rp.maxRadius - rp.startRadius) * easeOut;
+        const alpha = (1 - progress) * 0.85;
+
+        ctx.save();
+        // Onda circular principal
+        ctx.beginPath();
+        ctx.arc(rp.x, rp.y, currentRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = rp.color;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = 4 * (1 - progress * 0.6);
+        ctx.shadowColor = rp.color;
+        ctx.shadowBlur = 18;
+        ctx.stroke();
+
+        // Segunda onda armónica concéntrica
+        if (progress > 0.12) {
+          ctx.beginPath();
+          ctx.arc(rp.x, rp.y, currentRadius * 0.68, 0, Math.PI * 2);
+          ctx.globalAlpha = alpha * 0.55;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Etiqueta flotante de la nota ("🎵 DO", "🎵 RE", etc.) que sube suavemente
+        const floatY = rp.y - 36 - easeOut * 48;
+        const popScale = progress < 0.2 ? 0.6 + (progress / 0.2) * 0.55 : 1.15 - (progress - 0.2) * 0.2;
+
+        ctx.translate(rp.x, floatY);
+        ctx.scale(popScale, popScale);
+        ctx.globalAlpha = Math.min(1, (1 - progress) * 1.35);
+
+        ctx.font = "bold 24px 'Space Grotesk', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Fondo cápsula oscura con borde brillante
+        const badgeW = 92;
+        const badgeH = 38;
+        ctx.fillStyle = "rgba(11, 12, 16, 0.88)";
+        ctx.beginPath();
+        ctx.roundRect(-badgeW / 2, -badgeH / 2, badgeW, badgeH, 12);
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = rp.color;
+        ctx.stroke();
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`🎵 ${rp.note}`, 0, 1);
+
+        ctx.restore();
+      }
+    }
+
+    /**
+     * Actualiza la interfaz DOM de los 5 dedos, las 5 tarjetas de notas y el HUD musical
+     */
+    let lastHandUiSignature = "";
+
+    function updateHandMusicUI(handDetected, fingers, activeNoteKey, justTriggered = false) {
+      // Corregido: en el código pegado faltaban los "$" y el texto rompía el script completo
+      const fingerSig = fingers
+        ? `${fingers.index}${fingers.middle}${fingers.ring}${fingers.pinky}${fingers.thumb}`
+        : "none";
+      const sig = `${handDetected}-${fingerSig}-${activeNoteKey}-${justTriggered}`;
+      if (sig === lastHandUiSignature && !justTriggered) return;
+      lastHandUiSignature = sig;
+
+      handsCountBadge.textContent = handDetected ? (activeNoteKey ? `Mano: ${activeNoteKey} 🎵` : "Mano: Activa") : "Mano: No";
+
+      if (!handDetected || !fingers) {
+        handDetectedStatusBadge.textContent = "Sin mano detectada";
+        handDetectedStatusBadge.className = "text-[11px] font-sans font-semibold px-2 py-0.5 rounded-md bg-white/5 text-gray-400 border border-white/10";
+
+        Object.values(fingerPills).forEach(pill => {
+          if (!pill) return;
+          pill.className = "flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-400 transition-all";
+          const lbl = pill.querySelector(".finger-state-label");
+          if (lbl) lbl.textContent = "Doblado";
+        });
+
+        noteCardButtons.forEach(btn => {
+          btn.className = "note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center";
+        });
+
+        noteFloatingHud.classList.add("hidden");
+        noteFloatingHud.classList.remove("flex");
+        return;
+      }
+
+      // Actualizar estado general de la mano
+      if (activeNoteKey) {
+        handDetectedStatusBadge.textContent = `Tocando Nota ${activeNoteKey} 🎵`;
+        handDetectedStatusBadge.className = "text-[11px] font-sans font-bold px-2.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-200 border border-cyan-400/50";
+      } else {
+        handDetectedStatusBadge.textContent = "Mano detectada (Posición neutral)";
+        handDetectedStatusBadge.className = "text-[11px] font-sans font-semibold px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+      }
+
+      // Actualizar píldoras de los 5 dedos
+      const fingerNames = ["index", "middle", "ring", "pinky", "thumb"];
+      fingerNames.forEach(fKey => {
+        const pill = fingerPills[fKey];
+        if (!pill) return;
+        const isUp = fingers[fKey];
+        const lbl = pill.querySelector(".finger-state-label");
+        if (isUp) {
+          pill.className = "flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-cyan-400/60 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 transition-all";
+          if (lbl) lbl.textContent = "▲ Arriba";
+        } else {
+          pill.className = "flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-white/10 bg-black/30 text-gray-500 transition-all";
+          if (lbl) lbl.textContent = "Doblado";
+        }
+      });
+
+      // Resaltar tarjeta de la nota activa
+      noteCardButtons.forEach(btn => {
+        const btnNote = btn.getAttribute("data-note");
+        if (btnNote === activeNoteKey) {
+          btn.className = "note-card-btn group relative flex flex-col items-center p-3 rounded-xl border-2 border-cyan-400 bg-cyan-500/20 shadow-lg shadow-cyan-500/20 scale-[1.03] transition-all text-center";
+        } else {
+          btn.className = "note-card-btn group relative flex flex-col items-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-center";
+        }
+      });
+
+      // Mostrar u ocultar el HUD flotante en el video
+      if (activeNoteKey && MUSICAL_NOTES[activeNoteKey]) {
+        const nInfo = MUSICAL_NOTES[activeNoteKey];
+        noteFloatingHud.classList.remove("hidden");
+        noteFloatingHud.classList.add("flex");
+        noteHudName.textContent = nInfo.name;
+        noteHudFreq.textContent = `${Math.round(nInfo.freq)}Hz`;
+        noteHudGestureDesc.textContent = nInfo.description;
+        noteHudCircle.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${nInfo.gradient} flex flex-col items-center justify-center text-black font-display font-bold shadow-lg`;
+
+        if (justTriggered) {
+          noteFloatingHud.classList.remove("animate-note-pop");
+          void noteFloatingHud.offsetWidth; // Reflow para reiniciar animación pop-up
+          noteFloatingHud.classList.add("animate-note-pop");
+        }
+      } else {
+        noteFloatingHud.classList.add("hidden");
+        noteFloatingHud.classList.remove("flex");
+      }
+    }
+
+    // ==========================================
+    // 8. BUCLE PRINCIPAL EN TIEMPO REAL (MULTI-ROSTRO + MANOS)
+    // ==========================================
+    let globalFrameTick = 0;
+
+    function renderLoop(now) {
+      if (!isCameraRunning) return;
+      globalFrameTick++;
+
+      // Actualizar FPS
+      frameCount++;
+      if (now - lastFpsUpdate >= 500) {
+        const currentFps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+        fpsCounter.textContent = `${currentFps} FPS`;
+        frameCount = 0;
+        lastFpsUpdate = now;
+      }
+
+      if (webcamVideo.readyState >= 2) {
+        if (overlayCanvas.width !== webcamVideo.videoWidth || overlayCanvas.height !== webcamVideo.videoHeight) {
+          resizeCanvas();
+        }
+
+        let results = null;
+        let handResults = null;
+        if (webcamVideo.currentTime !== lastVideoTime) {
+          lastVideoTime = webcamVideo.currentTime;
+          results = faceLandmarker.detectForVideo(webcamVideo, now);
+          if (handLandmarker) {
+            handResults = handLandmarker.detectForVideo(webcamVideo, now);
+          }
+          window._lastDetectionResults = results;
+          window._lastHandDetectionResults = handResults;
+        } else {
+          results = window._lastDetectionResults;
+          handResults = window._lastHandDetectionResults;
+        }
+
+        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+        const detectedLandmarks = (results && results.faceLandmarks) ? results.faceLandmarks : [];
+        const detectedBlendshapes = (results && results.faceBlendshapes) ? results.faceBlendshapes : [];
+
+        facesCountBadge.textContent = `${detectedLandmarks.length} / ${MAX_FACES} rostros`;
+
+        if (detectedLandmarks.length > 0) {
+          const matchedList = matchFacesToTrackers(detectedLandmarks, globalFrameTick);
+
+          let angryCount = 0;
+          let happyCount = 0;
+          let maxAngerInFrame = 0;
+          let maxHappyInFrame = 0;
+          const uiFaceSummaries = [];
+
+          for (let idx = 0; idx < matchedList.length; idx++) {
+            const { tracker, landmarks, faceIndex } = matchedList[idx];
+            const blendCategories = detectedBlendshapes[faceIndex]
+              ? detectedBlendshapes[faceIndex].categories
+              : null;
+
+            // 1. Analizar tanto Enojo como Felicidad para esta persona
+            const scores = analyzeFaceEmotions(tracker, landmarks, blendCategories);
+
+            tracker.smoothedAnger = tracker.smoothedAnger * 0.68 + scores.rawAngerScore * 0.32;
+            tracker.smoothedHappy = tracker.smoothedHappy * 0.68 + scores.rawHappyScore * 0.32;
+
+            // 2. Histéresis para Enojo (Vena Roja)
+            const wantAngry = forceTestVein || (tracker.smoothedAnger >= angerThreshold);
+            const relaxAngry = !forceTestVein && (tracker.smoothedAnger < angerThreshold * 0.85);
+
+            if (wantAngry) {
+              tracker.angryHoldFrames++;
+              tracker.angryRelaxFrames = 0;
+              if (tracker.angryHoldFrames >= ACTIVATE_FRAMES_REQUIRED || forceTestVein) {
+                tracker.isAngry = true;
+              }
+            } else if (relaxAngry) {
+              tracker.angryRelaxFrames++;
+              tracker.angryHoldFrames = 0;
+              if (tracker.angryRelaxFrames >= DEACTIVATE_FRAMES_REQUIRED) {
+                tracker.isAngry = false;
+              }
+            }
+
+            // 3. Histéresis para Felicidad (Ojos de Estrella)
+            const wantHappy = forceTestStar || (tracker.smoothedHappy >= happyThreshold);
+            const relaxHappy = !forceTestStar && (tracker.smoothedHappy < happyThreshold * 0.85);
+
+            if (wantHappy) {
+              tracker.happyHoldFrames++;
+              tracker.happyRelaxFrames = 0;
+              if (tracker.happyHoldFrames >= ACTIVATE_FRAMES_REQUIRED || forceTestStar) {
+                tracker.isHappy = true;
+              }
+            } else if (relaxHappy) {
+              tracker.happyRelaxFrames++;
+              tracker.happyHoldFrames = 0;
+              if (tracker.happyRelaxFrames >= DEACTIVATE_FRAMES_REQUIRED) {
+                tracker.isHappy = false;
+              }
+            }
+
+            // Si ambas emociones están activas por gesto natural (no forzado), priorizar la de mayor intensidad relativa
+            if (tracker.isAngry && tracker.isHappy && !forceTestVein && !forceTestStar) {
+              const angerRatio = tracker.smoothedAnger / angerThreshold;
+              const happyRatio = tracker.smoothedHappy / happyThreshold;
+              if (happyRatio > angerRatio) {
+                tracker.isAngry = false;
+              } else {
+                tracker.isHappy = false;
+              }
+            }
+
+            if (tracker.isAngry) angryCount++;
+            if (tracker.isHappy) happyCount++;
+
+            const displayAnger = forceTestVein ? Math.max(tracker.smoothedAnger, 0.88) : tracker.smoothedAnger;
+            const displayHappy = forceTestStar ? Math.max(tracker.smoothedHappy, 0.90) : tracker.smoothedHappy;
+
+            if (displayAnger > maxAngerInFrame) maxAngerInFrame = displayAnger;
+            if (displayHappy > maxHappyInFrame) maxHappyInFrame = displayHappy;
+
+            // 4. Calcular posiciones de cabeza, ojos y mejillas de esta persona
+            const anchors = updateFaceAnchors(tracker, landmarks, overlayCanvas.width, overlayCanvas.height);
+
+            // 5. Actualizar física elástica de la Vena de Enojo de esta persona
+            if (tracker.isAngry) {
+              const force = (1.0 - tracker.veinSpring.scale) * 0.26;
+              tracker.veinSpring.velocity = (tracker.veinSpring.velocity + force) * 0.68;
+              tracker.veinSpring.scale += tracker.veinSpring.velocity;
+              tracker.veinSpring.opacity = Math.min(1, tracker.veinSpring.opacity + 0.18);
+            } else {
+              tracker.veinSpring.velocity = 0;
+              tracker.veinSpring.scale += (0 - tracker.veinSpring.scale) * 0.22;
+              tracker.veinSpring.opacity += (0 - tracker.veinSpring.opacity) * 0.20;
+            }
+
+            // 6. Actualizar física elástica de los Ojos de Estrella de esta persona
+            if (tracker.isHappy) {
+              const force = (1.0 - tracker.starSpring.scale) * 0.28;
+              tracker.starSpring.velocity = (tracker.starSpring.velocity + force) * 0.66;
+              tracker.starSpring.scale += tracker.starSpring.velocity;
+              tracker.starSpring.opacity = Math.min(1, tracker.starSpring.opacity + 0.20);
+            } else {
+              tracker.starSpring.velocity = 0;
+              tracker.starSpring.scale += (0 - tracker.starSpring.scale) * 0.22;
+              tracker.starSpring.opacity += (0 - tracker.starSpring.opacity) * 0.20;
+            }
+
+            // 7. Dibujar Landmarks de depuración si está habilitado
+            const personLabel = `Rostro #${idx + 1}`;
+            if (showDebugLandmarks) {
+              drawDebugFaceOverlay(ctx, landmarks, overlayCanvas.width, overlayCanvas.height, tracker, personLabel);
+            }
+
+            // 8. Renderizar Ojos de Estrella ✨ y/o Vena de Enojo 💢 para esta persona
+            drawAnimeStarryEyes(ctx, anchors, tracker.starSpring, now, tracker.id);
+            drawAnimeVein(ctx, anchors, tracker.veinSpring, now, tracker.isAngry, displayAnger);
+
+            uiFaceSummaries.push({
+              index: idx + 1,
+              id: tracker.id,
+              anger: displayAnger,
+              happy: displayHappy,
+              isAngry: tracker.isAngry,
+              isHappy: tracker.isHappy
+            });
+          }
+
+          updateGlobalStatusUI(matchedList.length, angryCount, happyCount);
+          updateGlobalTelemetryBars(maxAngerInFrame, maxHappyInFrame);
+
+          // Actualizar tarjetas individuales cada ~100ms para máxima fluidez del DOM
+          if (now - lastCardsRenderTime > 95) {
+            renderMultiFaceCards(uiFaceSummaries);
+            lastCardsRenderTime = now;
+          }
+        } else {
+          updateGlobalStatusUI(0, 0, 0);
+          updateGlobalTelemetryBars(0, 0);
+          if (now - lastCardsRenderTime > 200) {
+            renderMultiFaceCards([]);
+            lastCardsRenderTime = now;
+          }
+        }
+
+        // ==========================================
+        // PROCESAMIENTO DE MANOS Y NOTAS MUSICALES (SECCIÓN 9)
+        // ==========================================
+        const detectedHands = (handResults && handResults.landmarks) ? handResults.landmarks : [];
+
+        if (detectedHands.length > 0) {
+          // Procesar la mano principal (y dibujar cualquier mano adicional detectada)
+          const primaryHand = detectedHands[0];
+          const fingers = detectExtendedFingers(primaryHand);
+          const rawGestureNote = classifyMusicalGesture(fingers);
+
+          // Estabilidad temporal: confirmar el gesto tras 'handConfirmFramesRequired' frames iguales
+          if (rawGestureNote === handMusicState.candidateGesture) {
+            handMusicState.candidateFrames++;
+          } else {
+            handMusicState.candidateGesture = rawGestureNote;
+            handMusicState.candidateFrames = 1;
+          }
+
+          let justTriggeredNote = false;
+
+          if (handMusicState.candidateFrames >= handConfirmFramesRequired) {
+            handMusicState.stableGesture = rawGestureNote;
+
+            if (rawGestureNote === null) {
+              // El usuario volvió a una posición neutral: desbloquear para permitir repetir la misma nota
+              handMusicState.neutralFramesCount++;
+              if (handMusicState.neutralFramesCount >= 2) {
+                handMusicState.lockedPlayedNote = null;
+              }
+            } else {
+              handMusicState.neutralFramesCount = 0;
+              // Reproducir la nota SOLO UNA VEZ cuando cambia a un nuevo gesto válido o tras haber pasado por neutral
+              if (handMusicState.lockedPlayedNote !== rawGestureNote) {
+                handMusicState.lockedPlayedNote = rawGestureNote;
+                handMusicState.lastTriggeredNote = rawGestureNote;
+                handMusicState.lastTriggeredTime = now;
+                justTriggeredNote = true;
+
+                playMusicalNote(rawGestureNote);
+
+                // Crear onda expansiva visual centrada en la palma/nudillos de la mano
+                const palmCenter = primaryHand[9];
+                const screenX = (1 - palmCenter.x) * overlayCanvas.width;
+                const screenY = palmCenter.y * overlayCanvas.height;
+                const nInfo = MUSICAL_NOTES[rawGestureNote];
+
+                handMusicState.ripples.push({
+                  x: screenX,
+                  y: screenY,
+                  note: rawGestureNote,
+                  color: nInfo.color,
+                  startRadius: 20,
+                  maxRadius: 135,
+                  startTime: now,
+                  duration: 580
+                });
+              }
+            }
+          }
+
+          // Dibujar todas las manos en el Canvas
+          for (let hIdx = 0; hIdx < detectedHands.length; hIdx++) {
+            const hLandmarks = detectedHands[hIdx];
+            const hFingers = hIdx === 0 ? fingers : detectExtendedFingers(hLandmarks);
+            const hNote = hIdx === 0 ? handMusicState.stableGesture : classifyMusicalGesture(hFingers);
+            drawHandAndMusicalEffects(
+              ctx,
+              hLandmarks,
+              hFingers,
+              hNote,
+              overlayCanvas.width,
+              overlayCanvas.height,
+              now
+            );
+          }
+
+          updateHandMusicUI(true, fingers, handMusicState.stableGesture, justTriggeredNote);
+        } else {
+          // Si la mano sale de cámara, reiniciar el bloqueo para que al volver pueda sonar de inmediato
+          handMusicState.candidateGesture = null;
+          handMusicState.candidateFrames = 0;
+          handMusicState.stableGesture = null;
+          handMusicState.lockedPlayedNote = null;
+          updateHandMusicUI(false, null, null, false);
+        }
+
+        // Dibujar ondas expansivas activas
+        if (handMusicState.ripples.length > 0) {
+          drawMusicalRipplesOverlay(ctx, now);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(renderLoop);
+    }
+
+    // ==========================================
+    // 9. ACTUALIZACIÓN DE INTERFAZ Y TELEMETRÍA MULTI-ROSTRO
+    // ==========================================
+    let lastStatusSignature = "";
+
+    function updateGlobalStatusUI(totalFaces, angryCount, happyCount) {
+      // Corregido: faltaba el "$" antes de {totalFaces}
+      const sig = `${totalFaces}-${angryCount}-${happyCount}`;
+      if (sig === lastStatusSignature) return;
+      lastStatusSignature = sig;
+
+      viewportContainer.classList.remove("angry-frame-glow", "happy-frame-glow", "mixed-frame-glow");
+
+      if (totalFaces === 0) {
+        statusText.textContent = "Esperando rostros...";
+        statusText.className = "text-xs sm:text-sm font-semibold tracking-wide text-gray-200";
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
+        statusPill.className = "flex items-center gap-2.5 px-4 py-2 rounded-full bg-gray-900/90 border border-white/15 transition-all duration-200";
+        angryVignette.classList.replace("opacity-100", "opacity-0");
+        happyVignette.classList.replace("opacity-100", "opacity-0");
+        return;
+      }
+
+      if (angryCount > 0 && happyCount > 0) {
+        statusText.textContent = `${totalFaces} rostros: ${angryCount} Enojo 💢, ${happyCount} Ojos de Estrella ✨`;
+        statusText.className = "text-xs sm:text-sm font-bold tracking-wide text-amber-200";
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse-fast shadow-[0_0_10px_#fb923c]";
+        statusPill.className = "flex items-center gap-2.5 px-4 py-2 rounded-full bg-orange-950/90 border border-orange-500/70 shadow-lg transition-all duration-200";
+        viewportContainer.classList.add("mixed-frame-glow");
+        angryVignette.classList.replace("opacity-0", "opacity-100");
+        happyVignette.classList.replace("opacity-0", "opacity-100");
+      } else if (angryCount > 0) {
+        statusText.textContent = totalFaces === 1
+          ? "Expresión de enojo detectada 💢"
+          : `${totalFaces} rostros • ${angryCount} con Enojo detectado 💢`;
+        statusText.className = "text-xs sm:text-sm font-bold tracking-wide text-red-200";
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse-fast shadow-[0_0_10px_#ff2a2a]";
+        statusPill.className = "flex items-center gap-2.5 px-4 py-2 rounded-full bg-red-950/90 border border-red-500/70 shadow-lg shadow-red-600/20 transition-all duration-200";
+        viewportContainer.classList.add("angry-frame-glow");
+        angryVignette.classList.replace("opacity-0", "opacity-100");
+        happyVignette.classList.replace("opacity-100", "opacity-0");
+      } else if (happyCount > 0) {
+        statusText.textContent = totalFaces === 1
+          ? "¡Felicidad detectada! Ojos de Estrella ✨"
+          : `${totalFaces} rostros • ${happyCount} con Ojos de Estrella ✨`;
+        statusText.className = "text-xs sm:text-sm font-bold tracking-wide text-amber-200";
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse-fast shadow-[0_0_10px_#facc15]";
+        statusPill.className = "flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-950/90 border border-amber-400/70 shadow-lg shadow-amber-500/20 transition-all duration-200";
+        viewportContainer.classList.add("happy-frame-glow");
+        happyVignette.classList.replace("opacity-0", "opacity-100");
+        angryVignette.classList.replace("opacity-100", "opacity-0");
+      } else {
+        statusText.textContent = totalFaces === 1
+          ? "Expresión neutral (1 rostro)"
+          : `Expresión neutral (${totalFaces} rostros en cámara)`;
+        statusText.className = "text-xs sm:text-sm font-semibold tracking-wide text-emerald-200";
+        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+        statusPill.className = "flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-950/50 border border-emerald-500/30 transition-all duration-200";
+        angryVignette.classList.replace("opacity-100", "opacity-0");
+        happyVignette.classList.replace("opacity-100", "opacity-0");
+      }
+    }
+
+    function updateGlobalTelemetryBars(maxAnger, maxHappy) {
+      const angerPct = Math.round(maxAnger * 100);
+      const happyPct = Math.round(maxHappy * 100);
+
+      angerScoreBadge.textContent = `Máx: ${angerPct}%`;
+      angerProgressBar.style.width = `${angerPct}%`;
+
+      happyScoreBadge.textContent = `Máx: ${happyPct}%`;
+      happyProgressBar.style.width = `${happyPct}%`;
+    }
+
+    function renderMultiFaceCards(faceSummaries) {
+      if (!faceSummaries || faceSummaries.length === 0) {
+        multiFaceCardsContainer.innerHTML = `
+          <div class="col-span-full py-5 text-center text-xs text-gray-500 bg-black/25 rounded-xl border border-white/5">
+            Ningún rostro detectado en este momento. Asegúrate de estar frente a la cámara.
+          </div>
+        `;
+        return;
+      }
+
+      multiFaceCardsContainer.innerHTML = faceSummaries.map(f => {
+        const angerPct = Math.round(f.anger * 100);
+        const happyPct = Math.round(f.happy * 100);
+
+        let badgeHtml = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Neutral</span>`;
+        let borderClass = "border-white/10 bg-black/30";
+
+        if (f.isAngry) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/25 text-red-300 border border-red-500/50">💢 Enojo Activo</span>`;
+          borderClass = "border-red-500/50 bg-red-950/20";
+        } else if (f.isHappy) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-400/25 text-amber-200 border border-amber-400/50">✨ Ojos de Estrella</span>`;
+          borderClass = "border-amber-400/50 bg-amber-950/20";
+        }
+
+        return `
+          <div class="rounded-xl p-3.5 border ${borderClass} transition-colors space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white">Persona #${f.index}</span>
+              ${badgeHtml}
+            </div>
+            <div class="space-y-1.5">
+              <div>
+                <div class="flex justify-between text-[11px] text-gray-300 mb-0.5">
+                  <span>💢 Enojo</span>
+                  <span class="font-mono">${angerPct}%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-red-500" style="width: ${angerPct}%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] text-gray-300 mb-0.5">
+                  <span>✨ Felicidad (Estrellas)</span>
+                  <span class="font-mono">${happyPct}%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-400" style="width: ${happyPct}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showError(msg) {
+      errorBannerText.textContent = msg;
+      errorBanner.classList.remove("hidden");
+    }
+
+    function hideError() {
+      errorBanner.classList.add("hidden");
+    }
+
+    // ==========================================
+    // 10. EVENT LISTENERS DE CONTROLES INTERACTIVOS
+    // ==========================================
+    startCamBtnHero.addEventListener("click", () => {
+      if (!isCameraRunning) startCamera();
+    });
+
+    toggleCamBtn.addEventListener("click", () => {
+      if (isCameraRunning) stopCamera();
+      else startCamera();
+    });
+
+    closeErrorBtn.addEventListener("click", hideError);
+
+    // Calibrar todos los rostros presentes en pantalla como neutrales
+    calibrateBtn.addEventListener("click", () => {
+      let calibratedAny = false;
+      for (const tracker of faceTrackers) {
+        if (tracker.lastRawGeometry) {
+          tracker.baseline.innerBrowRatio = tracker.lastRawGeometry.innerBrowRatio;
+          tracker.baseline.browToEyeRatio = tracker.lastRawGeometry.browToEyeRatio;
+          tracker.baseline.eyeOpenRatio = tracker.lastRawGeometry.eyeOpenRatio;
+          tracker.baseline.browSlopeAngle = tracker.lastRawGeometry.browSlopeAngle;
+          tracker.baseline.mouthWidthRatio = tracker.lastRawGeometry.mouthWidthRatio;
+          tracker.baseline.calibrated = true;
+          calibratedAny = true;
+        }
+      }
+      if (calibratedAny) {
+        calibrationBadge.classList.remove("hidden");
+        calibrationBadge.classList.add("flex");
+      }
+    });
+
+    // Alternar visualización de Landmarks
+    toggleDebugBtn.addEventListener("click", () => {
+      showDebugLandmarks = !showDebugLandmarks;
+      debugBtnText.textContent = `Landmarks: ${showDebugLandmarks ? "ON" : "OFF"}`;
+      if (showDebugLandmarks) {
+        toggleDebugBtn.classList.replace("bg-white/5", "bg-sky-500/20");
+        toggleDebugBtn.classList.replace("border-white/10", "border-sky-500/40");
+      } else {
+        toggleDebugBtn.classList.replace("bg-sky-500/20", "bg-white/5");
+        toggleDebugBtn.classList.replace("border-sky-500/40", "border-white/10");
+      }
+    });
+
+    // Probar Vena de Enojo manualmente
+    testVeinBtn.addEventListener("click", () => {
+      forceTestVein = !forceTestVein;
+      testVeinBtn.innerHTML = `<span>💢 Probar Enojo: ${forceTestVein ? "ON" : "OFF"}</span>`;
+      if (forceTestVein) {
+        faceTrackers.forEach(t => { t.veinSpring.velocity = 0.24; });
+        testVeinBtn.classList.replace("bg-red-500/15", "bg-red-600");
+        testVeinBtn.classList.replace("text-red-300", "text-white");
+      } else {
+        testVeinBtn.classList.replace("bg-red-600", "bg-red-500/15");
+        testVeinBtn.classList.replace("text-white", "text-red-300");
+      }
+    });
+
+    // Probar Ojos de Estrella manualmente
+    testStarBtn.addEventListener("click", () => {
+      forceTestStar = !forceTestStar;
+      testStarBtn.innerHTML = `<span>✨ Probar Estrellas: ${forceTestStar ? "ON" : "OFF"}</span>`;
+      if (forceTestStar) {
+        faceTrackers.forEach(t => { t.starSpring.velocity = 0.25; });
+        testStarBtn.classList.replace("bg-amber-400/15", "bg-amber-500");
+        testStarBtn.classList.replace("text-amber-200", "text-black");
+      } else {
+        testStarBtn.classList.replace("bg-amber-500", "bg-amber-400/15");
+        testStarBtn.classList.replace("text-black", "text-amber-200");
+      }
+    });
+
+    // Slider de Umbral de Enojo
+    thresholdSlider.addEventListener("input", (e) => {
+      const val = parseInt(e.target.value, 10);
+      angerThreshold = val / 100;
+      thresholdValueText.textContent = `${val}%`;
+      angerThresholdMarkerLabel.textContent = `Umbral Enojo: ${val}%`;
+      angerThresholdIndicatorLine.style.left = `${val}%`;
+    });
+
+    // Slider de Umbral de Felicidad (Ojos de Estrella)
+    happyThresholdSlider.addEventListener("input", (e) => {
+      const val = parseInt(e.target.value, 10);
+      happyThreshold = val / 100;
+      happyThresholdValueText.textContent = `${val}%`;
+      happyThresholdMarkerLabel.textContent = `Umbral Estrella: ${val}%`;
+      happyThresholdIndicatorLine.style.left = `${val}%`;
+    });
+
+    // Selector de Estilo de Vena Anime
+    styleAnimeBtn.addEventListener("click", () => {
+      veinStyle = "anime_angled";
+      faceTrackers.forEach(t => { t.veinSpring.velocity = 0.18; });
+      styleAnimeBtn.className = "vein-style-btn active flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 border-red-500 bg-red-500/10 text-white transition-all";
+      styleCurvedBtn.className = "vein-style-btn flex items-center justify-center gap-2 p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 transition-all";
+    });
+
+    styleCurvedBtn.addEventListener("click", () => {
+      veinStyle = "curved_arcs";
+      faceTrackers.forEach(t => { t.veinSpring.velocity = 0.18; });
+      styleCurvedBtn.className = "vein-style-btn active flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 border-red-500 bg-red-500/10 text-white transition-all";
+      styleAnimeBtn.className = "vein-style-btn flex items-center justify-center gap-2 p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 transition-all";
+    });
+
+    // Slider de Escala Global
+    veinSizeSlider.addEventListener("input", (e) => {
+      const val = parseInt(e.target.value, 10);
+      userScaleMultiplier = val / 100;
+      sizeValueText.textContent = `${val}%`;
+    });
+
+    // ==========================================
+    // 11. EVENT LISTENERS DE CONTROLES MUSICALES Y MANOS (SECCIÓN 9)
+    // ==========================================
+    toggleAudioBtn.addEventListener("click", () => {
+      isAudioEnabled = !isAudioEnabled;
+      if (isAudioEnabled) {
+        ensureAudioContext();
+        audioBtnText.textContent = "Audio: ON";
+        toggleAudioBtn.classList.replace("bg-white/5", "bg-cyan-500/15");
+        toggleAudioBtn.classList.replace("text-gray-400", "text-cyan-200");
+      } else {
+        audioBtnText.textContent = "Audio: MUTE";
+        toggleAudioBtn.classList.replace("bg-cyan-500/15", "bg-white/5");
+        toggleAudioBtn.classList.replace("text-cyan-200", "text-gray-400");
+      }
+    });
+
+    synthPianoBtn.addEventListener("click", () => {
+      synthTimbre = "piano";
+      synthPianoBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-black transition-all";
+      synthWarmBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white transition-all";
+      playMusicalNote("DO");
+    });
+
+    synthWarmBtn.addEventListener("click", () => {
+      synthTimbre = "warm";
+      synthWarmBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-black transition-all";
+      synthPianoBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white transition-all";
+      playMusicalNote("MI");
+    });
+
+    handStabilitySlider.addEventListener("input", (e) => {
+      const val = parseInt(e.target.value, 10);
+      handConfirmFramesRequired = val;
+      handStabilityValueText.textContent = `${val} frames`;
+    });
+
+    // Permitir hacer clic en cualquiera de las 5 tarjetas (DO, RE, MI, FA, SOL) para probar su sonido y animación
+    noteCardButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const noteKey = btn.getAttribute("data-note");
+        if (!noteKey || !MUSICAL_NOTES[noteKey]) return;
+
+        ensureAudioContext();
+        playMusicalNote(noteKey);
+
+        const demoFingers = {
+          index: true,
+          middle: ["RE", "MI", "FA", "SOL"].includes(noteKey),
+          ring: ["MI", "FA", "SOL"].includes(noteKey),
+          pinky: ["FA", "SOL"].includes(noteKey),
+          thumb: noteKey === "SOL"
+        };
+        updateHandMusicUI(true, demoFingers, noteKey, true);
+
+        if (overlayCanvas.width > 0) {
+          handMusicState.ripples.push({
+            x: overlayCanvas.width * 0.5,
+            y: overlayCanvas.height * 0.65,
+            note: noteKey,
+            color: MUSICAL_NOTES[noteKey].color,
+            startRadius: 20,
+            maxRadius: 135,
+            startTime: performance.now(),
+            duration: 580
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
