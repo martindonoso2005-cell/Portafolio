@@ -234,6 +234,10 @@
           <i data-lucide="hand" class="w-3.5 h-3.5 text-cyan-400"></i>
           <span id="handsCountBadge">Mano: No</span>
         </div>
+        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          <i data-lucide="person-standing" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span id="bodiesCountBadge">0 cuerpos</span>
+        </div>
         <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 font-mono">
           <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i>
           <span id="fpsCounter">0 FPS</span>
@@ -287,6 +291,9 @@
           </div>
           <div class="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-cyan-400/35 text-[11px] font-medium text-cyan-200 flex items-center gap-1">
             <span>🎵 1-5 Dedos = DO..SOL</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md border border-emerald-400/35 text-[11px] font-medium text-emerald-200 flex items-center gap-1">
+            <span>🧍 Cuerpo</span>
           </div>
         </div>
 
@@ -387,6 +394,12 @@
           <button id="toggleAudioBtn" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 border border-cyan-400/35 transition-all">
             <i data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
             <span id="audioBtnText">Audio: ON</span>
+          </button>
+
+          <!-- Botón: Activar / Desactivar detección de cuerpo completo -->
+          <button id="toggleBodyBtn" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 border border-emerald-400/35 transition-all">
+            <i data-lucide="person-standing" class="w-4 h-4 text-emerald-400"></i>
+            <span id="bodyBtnText">Cuerpo: ON</span>
           </button>
         </div>
 
@@ -489,6 +502,29 @@
             <span class="text-[11px] text-gray-400 leading-tight">Mano completa (+Pulgar)</span>
           </button>
         </div>
+      </div>
+
+      <!-- Tarjeta: Detección de Cuerpo Completo (MediaPipe Pose Landmarker) -->
+      <div class="bg-[#13151C] border border-emerald-500/25 rounded-2xl p-5 shadow-lg space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
+              <i data-lucide="person-standing" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-sm sm:text-base text-white flex flex-wrap items-center gap-2">
+                Cuerpo Completo con MediaPipe Pose Landmarker
+                <span id="bodyStatusBadge" class="text-[11px] font-sans font-semibold px-2 py-0.5 rounded-md bg-white/5 text-gray-400 border border-white/10">
+                  Sin cuerpo detectado
+                </span>
+              </h3>
+              <p class="text-xs text-gray-400">
+                33 puntos por persona (hasta 3). Posturas: 🙌 brazos arriba, 🙋 una mano arriba, ✈️ pose T y 🧍 de pie.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="bodyListContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
       </div>
 
       <!-- Tarjeta Inferior: Lista en Vivo de Personas Detectadas (Multi-Face Telemetry) -->
@@ -656,7 +692,7 @@
 
   <!-- Footer Minimalista -->
   <footer class="w-full border-t border-white/10 py-3 px-4 text-center text-xs text-gray-500">
-    Procesamiento local en tiempo real con MediaPipe Face Landmarker & Hand Landmarker • Web Audio API Synth • Privacidad 100% en navegador.
+    Procesamiento local en tiempo real con MediaPipe Face, Hand & Pose Landmarker • Web Audio API Synth • Privacidad 100% en navegador.
   </footer>
 
   <!-- Script Principal con MediaPipe Tasks Vision -->
@@ -664,6 +700,7 @@
     import {
       FaceLandmarker,
       HandLandmarker,
+      PoseLandmarker,
       FilesetResolver
     } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 
@@ -717,6 +754,13 @@
     const handStabilitySlider = document.getElementById("handStabilitySlider");
     const handStabilityValueText = document.getElementById("handStabilityValueText");
 
+    // Referencias DOM de Cuerpo Completo
+    const bodiesCountBadge = document.getElementById("bodiesCountBadge");
+    const bodyStatusBadge = document.getElementById("bodyStatusBadge");
+    const bodyListContainer = document.getElementById("bodyListContainer");
+    const toggleBodyBtn = document.getElementById("toggleBodyBtn");
+    const bodyBtnText = document.getElementById("bodyBtnText");
+
     const fingerPills = {
       index: document.getElementById("fingerPill-index"),
       middle: document.getElementById("fingerPill-middle"),
@@ -756,8 +800,11 @@
     // CONFIGURACIÓN Y ESTADO MULTI-ROSTRO Y MANOS
     // ==========================================
     const MAX_FACES = 5;
+    const MAX_BODIES = 3;
     let faceLandmarker = null;
     let handLandmarker = null;
+    let poseLandmarker = null;
+    let showBody = true;
     let isCameraRunning = false;
     let mediaStream = null;
     let lastVideoTime = -1;
@@ -881,8 +928,8 @@
           "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
         );
 
-        // Inicializar ambos modelos en paralelo (Rostros + Manos)
-        const [faceModel, handModel] = await Promise.all([
+        // Inicializar los modelos en paralelo (Rostros + Manos + Cuerpo completo)
+        const [faceModel, handModel, poseModel] = await Promise.all([
           FaceLandmarker.createFromOptions(filesetResolver, {
             baseOptions: {
               modelAssetPath:
@@ -901,11 +948,29 @@
             },
             runningMode: "VIDEO",
             numHands: 2
+          }),
+          // Cuerpo completo: 33 puntos por persona (versión "lite", la más rápida)
+          PoseLandmarker.createFromOptions(filesetResolver, {
+            baseOptions: {
+              modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+              delegate: "GPU"
+            },
+            runningMode: "VIDEO",
+            numPoses: MAX_BODIES
+          }).catch(err => {
+            // Si el modelo de cuerpo falla, el resto de la app sigue funcionando
+            console.error("No se pudo cargar el modelo de cuerpo:", err);
+            return null;
           })
         ]);
 
         faceLandmarker = faceModel;
         handLandmarker = handModel;
+        poseLandmarker = poseModel;
+        if (!poseLandmarker) {
+          bodyStatusBadge.textContent = "Modelo de cuerpo no disponible";
+        }
 
         startCamBtnHero.disabled = false;
         toggleCamBtn.disabled = false;
@@ -1196,6 +1261,7 @@
       fpsCounter.textContent = "0 FPS";
       facesCountBadge.textContent = `0 / ${MAX_FACES} rostros`;
       handsCountBadge.textContent = "Mano: No";
+      updateBodyUI([]);
     }
 
     function resizeCanvas() {
@@ -2170,6 +2236,142 @@
     }
 
     // ==========================================
+    // 7.C CUERPO COMPLETO: ESQUELETO DE 33 PUNTOS Y POSTURAS
+    // ==========================================
+    // Conexiones del esqueleto (sin los puntos finos de la cara: de eso se encarga el Face Landmarker)
+    const POSE_CONNECTIONS = [
+      [11, 12], [11, 23], [12, 24], [23, 24],                 // Torso
+      [11, 13], [13, 15], [15, 17], [15, 19], [15, 21], [17, 19], // Brazo izquierdo
+      [12, 14], [14, 16], [16, 18], [16, 20], [16, 22], [18, 20], // Brazo derecho
+      [23, 25], [25, 27], [27, 29], [27, 31], [29, 31],       // Pierna izquierda
+      [24, 26], [26, 28], [28, 30], [28, 32], [30, 32]        // Pierna derecha
+    ];
+    const POSE_POINTS = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
+
+    const POSTURAS = {
+      arriba: { label: "🙌 Brazos arriba", color: "#FACC15" },
+      mano:   { label: "🙋 Mano arriba", color: "#22D3EE" },
+      t:      { label: "✈️ Pose T", color: "#E879F9" },
+      pie:    { label: "🧍 De pie", color: "#34D399" }
+    };
+
+    const visible = (p) => p && (p.visibility === undefined || p.visibility > 0.5);
+
+    /**
+     * Clasifica la postura de una persona con sus puntos del cuerpo (coordenadas normalizadas, y hacia abajo)
+     */
+    function classifyBodyPosture(lm) {
+      const nose = lm[0], lSh = lm[11], rSh = lm[12], lWr = lm[15], rWr = lm[16], lHip = lm[23], rHip = lm[24];
+      if (!visible(lSh) || !visible(rSh)) return { key: null, completo: false };
+
+      const shoulderW = Math.max(dist2D(lSh, rSh), 0.02);
+      const shoulderY = (lSh.y + rSh.y) * 0.5;
+      const headY = visible(nose) ? nose.y : shoulderY - shoulderW * 0.8;
+      const lUp = visible(lWr) && lWr.y < headY;
+      const rUp = visible(rWr) && rWr.y < headY;
+
+      let key = "pie";
+      if (lUp && rUp) key = "arriba";
+      else if (lUp || rUp) key = "mano";
+      else if (visible(lWr) && visible(rWr) &&
+               Math.abs(lWr.y - shoulderY) < shoulderW * 0.45 &&
+               Math.abs(rWr.y - shoulderY) < shoulderW * 0.45 &&
+               Math.abs(lWr.x - rWr.x) > shoulderW * 2.4) key = "t";
+
+      const completo = visible(lm[27]) && visible(lm[28]) && visible(lHip) && visible(rHip);
+      return { key, completo };
+    }
+
+    /**
+     * Dibuja el esqueleto de una persona y su postura sobre la cabeza
+     */
+    function drawBodySkeleton(ctx, lm, posture, w, h, now) {
+      const toScreen = (p) => ({ x: (1 - p.x) * w, y: p.y * h });
+      const info = POSTURAS[posture.key] || POSTURAS.pie;
+      const unit = Math.max(2, w / 420);
+
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.strokeStyle = info.color;
+      ctx.globalAlpha = 0.85;
+      ctx.lineWidth = unit * 2.2;
+      ctx.shadowColor = info.color;
+      ctx.shadowBlur = posture.key && posture.key !== "pie" ? 14 : 4;
+
+      for (const [a, b] of POSE_CONNECTIONS) {
+        if (!visible(lm[a]) || !visible(lm[b])) continue;
+        const p = toScreen(lm[a]), q = toScreen(lm[b]);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.stroke();
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+      for (const i of POSE_POINTS) {
+        if (!visible(lm[i])) continue;
+        const p = toScreen(lm[i]);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, unit * (i === 15 || i === 16 ? 3.2 : 2.2), 0, Math.PI * 2);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+        ctx.lineWidth = unit;
+        ctx.strokeStyle = info.color;
+        ctx.stroke();
+      }
+
+      // Etiqueta de la postura sobre la cabeza (rebota un poco si es una postura especial)
+      const top = visible(lm[0]) ? toScreen(lm[0]) : toScreen(lm[11]);
+      const bounce = posture.key && posture.key !== "pie" ? Math.sin(now * 0.012) * unit * 2 : 0;
+      const ty = Math.max(unit * 12, top.y - unit * 46 + bounce);
+      ctx.font = `bold ${Math.round(unit * 8)}px 'Space Grotesk', sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const texto = info.label;
+      const tw = ctx.measureText(texto).width + unit * 10;
+      ctx.fillStyle = "rgba(11, 12, 16, 0.82)";
+      ctx.beginPath();
+      ctx.roundRect(top.x - tw / 2, ty - unit * 7, tw, unit * 14, unit * 5);
+      ctx.fill();
+      ctx.lineWidth = unit * 0.9;
+      ctx.strokeStyle = info.color;
+      ctx.stroke();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillText(texto, top.x, ty + 1);
+      ctx.restore();
+    }
+
+    let lastBodyUiSignature = "";
+    function updateBodyUI(postures) {
+      const sig = postures.map(p => `${p.key}${p.completo}`).join("|") + showBody;
+      if (sig === lastBodyUiSignature) return;
+      lastBodyUiSignature = sig;
+
+      bodiesCountBadge.textContent = `${postures.length} cuerpo${postures.length === 1 ? "" : "s"}`;
+      if (!showBody) {
+        bodyStatusBadge.textContent = "Desactivado";
+        bodyListContainer.innerHTML = "";
+        return;
+      }
+      if (postures.length === 0) {
+        bodyStatusBadge.textContent = "Sin cuerpo detectado";
+        bodyListContainer.innerHTML = `<div class="col-span-full py-3 text-center text-xs text-gray-500 bg-black/25 rounded-xl border border-white/5">Aléjate un poco de la cámara para que se vea tu cuerpo.</div>`;
+        return;
+      }
+      bodyStatusBadge.textContent = `${postures.length} persona${postures.length === 1 ? "" : "s"} detectada${postures.length === 1 ? "" : "s"}`;
+      bodyListContainer.innerHTML = postures.map((p, i) => {
+        const info = POSTURAS[p.key] || POSTURAS.pie;
+        return `
+          <div class="rounded-xl p-3 border border-white/10 bg-black/30 flex items-center justify-between gap-2">
+            <span class="text-xs font-bold text-white">Cuerpo #${i + 1}</span>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded border" style="color:${info.color};border-color:${info.color}66">${info.label}</span>
+            <span class="text-[11px] text-gray-400">${p.completo ? "Cuerpo completo" : "Solo torso"}</span>
+          </div>`;
+      }).join("");
+    }
+
+    // ==========================================
     // 8. BUCLE PRINCIPAL EN TIEMPO REAL (MULTI-ROSTRO + MANOS)
     // ==========================================
     let globalFrameTick = 0;
@@ -2194,20 +2396,35 @@
 
         let results = null;
         let handResults = null;
+        let poseResults = null;
         if (webcamVideo.currentTime !== lastVideoTime) {
           lastVideoTime = webcamVideo.currentTime;
           results = faceLandmarker.detectForVideo(webcamVideo, now);
           if (handLandmarker) {
             handResults = handLandmarker.detectForVideo(webcamVideo, now);
           }
+          if (poseLandmarker && showBody) {
+            poseResults = poseLandmarker.detectForVideo(webcamVideo, now);
+          }
           window._lastDetectionResults = results;
           window._lastHandDetectionResults = handResults;
+          window._lastPoseDetectionResults = poseResults;
         } else {
           results = window._lastDetectionResults;
           handResults = window._lastHandDetectionResults;
+          poseResults = window._lastPoseDetectionResults;
         }
 
         ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+        // CUERPO COMPLETO: se dibuja primero, debajo de los efectos de cara y manos
+        const detectedBodies = (showBody && poseResults && poseResults.landmarks) ? poseResults.landmarks : [];
+        const bodyPostures = detectedBodies.map(classifyBodyPosture).filter(p => p.key);
+        detectedBodies.forEach(lm => {
+          const posture = classifyBodyPosture(lm);
+          if (posture.key) drawBodySkeleton(ctx, lm, posture, overlayCanvas.width, overlayCanvas.height, now);
+        });
+        updateBodyUI(bodyPostures);
 
         const detectedLandmarks = (results && results.faceLandmarks) ? results.faceLandmarks : [];
         const detectedBlendshapes = (results && results.faceBlendshapes) ? results.faceBlendshapes : [];
@@ -2734,6 +2951,21 @@
       synthWarmBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-black transition-all";
       synthPianoBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white transition-all";
       playMusicalNote("MI");
+    });
+
+    // Activar / desactivar la detección de cuerpo completo (apagarla da más FPS)
+    toggleBodyBtn.addEventListener("click", () => {
+      showBody = !showBody;
+      bodyBtnText.textContent = `Cuerpo: ${showBody ? "ON" : "OFF"}`;
+      if (showBody) {
+        toggleBodyBtn.classList.replace("bg-white/5", "bg-emerald-500/15");
+        toggleBodyBtn.classList.replace("text-gray-400", "text-emerald-200");
+      } else {
+        toggleBodyBtn.classList.replace("bg-emerald-500/15", "bg-white/5");
+        toggleBodyBtn.classList.replace("text-emerald-200", "text-gray-400");
+      }
+      window._lastPoseDetectionResults = null;
+      updateBodyUI([]);
     });
 
     handStabilitySlider.addEventListener("input", (e) => {
