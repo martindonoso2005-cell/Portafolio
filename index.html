@@ -64,6 +64,21 @@
       margin-bottom: 0.8rem;
     }
 
+    [hidden] { display: none !important; }
+
+    .header-info p.bio {
+      color: var(--text-muted);
+      font-size: 0.6rem;
+      line-height: 2;
+      max-width: 60ch;
+      margin: 0 auto 1.5rem;
+    }
+
+    .header-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
     .header-info p {
       color: var(--accent-cyan);
       font-size: 0.75rem;
@@ -377,8 +392,11 @@
     <div class="header-info">
       <h1>PORTAFOLIO MARTÍN</h1>
       <p>★ EXPLORA MIS PROYECTOS Y APLICACIONES ★</p>
+      <p class="bio">Martín Donoso · Diseño de Interfaces · Universidad Adolfo Ibáñez · 2026<br>Interfaces físicas, sonoras, realidad aumentada, realidad virtual y visión por computador.</p>
     </div>
-    <button class="admin-toggle-btn" id="adminToggle" title="Atajo: Alt + A">[⚙] MODO GESTOR</button>
+    <a class="admin-toggle-btn header-link" href="https://github.com/martindonoso2005-cell" target="_blank" rel="noopener noreferrer">VER MI GITHUB ►</a>
+    <!-- Modo gestor oculto para los visitantes: se abre con Alt + A (solo cambia este navegador) -->
+    <button class="admin-toggle-btn" id="adminToggle" title="Atajo: Alt + A" hidden>[⚙] MODO GESTOR</button>
   </header>
 
   <section class="admin-panel" id="adminPanel">
@@ -437,10 +455,10 @@
       {
         id: 11,
         title: "Anime Emotion & Hand Music",
-        url: "experimentos/anime-emotion.html",
+        url: "https://martindonoso2005-cell.github.io/mediapipe-anime-emotion/",
         img: "img/anime-emotion.jpg",
-        desc: "Visión por computador con MediaPipe: detecta hasta 5 rostros y dibuja vena de enojo u ojos de estrella, y toca DO-RE-MI-FA-SOL levantando los dedos frente a la cámara.",
-        tag: "Visión + Audio"
+        desc: "Visión por computador con MediaPipe: detecta rostros (vena de enojo u ojos de estrella), manos (toca DO-RE-MI-FA-SOL con los dedos) y el cuerpo completo frente a la cámara.",
+        tag: "Visión por Computador"
       },
       {
         id: 9,
@@ -475,61 +493,70 @@
         tag: "Realidad Aumentada"
       },
       {
+        id: 13,
+        title: "Cofre Sonoro Minecraft",
+        url: "https://martindonoso2005-cell.github.io/Cofre-Sonoro-Minecraft/",
+        img: "img/cofre-sonoro.jpg",
+        desc: "Cofre impreso en 3D con un keyboard hack: al abrir o cerrar la tapa, un interruptor de bola reemplaza una tecla y suenan los efectos del cofre de Minecraft.",
+        tag: "Interfaz Física"
+      },
+      {
         id: 1,
-        title: "Arcade Game",
+        title: "Juego de Salto por Voz",
         url: "https://martindonoso2005-cell.github.io/juego/",
-        img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
-        desc: "Juego retro interactivo desarrollado en entorno web.",
-        tag: "Game Dev"
+        img: "img/juego-voz.jpg",
+        desc: "Juego arcade en p5.js que se controla con la voz: el personaje salta cuando dices \"hola\" al micrófono para esquivar obstáculos.",
+        tag: "Juego por Voz"
       },
       {
         id: 2,
         title: "Adivinar Sonido",
         url: "https://martindonoso2005-cell.github.io/Juego-Adivinar-Sonido/",
-        img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
-        desc: "Desafío auditivo interactivo para ejercitar el oído y reconocer pistas de audio.",
-        tag: "Audio Game"
+        img: "img/adivinar-sonido.jpg",
+        desc: "Juego educativo de entrenamiento auditivo: escuchas el sonido de un animal y eliges cuál es, con respuesta inmediata al acertar o fallar.",
+        tag: "Juego Sonoro"
       },
       {
         id: 3,
         title: "Sonificador de Datos",
         url: "https://martindonoso2005-cell.github.io/Sonficador-de-datos/",
-        img: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
-        desc: "Transformador de secuencias de datos cuantitativos a espectros audibles.",
-        tag: "Data Science"
+        img: "img/sonificador-datos.jpg",
+        desc: "Convierte en sonido los 27 terremotos de mayor magnitud de la historia, para escuchar su frecuencia e intensidad.",
+        tag: "Sonificación"
       },
       {
         id: 4,
-        title: "Sintetizador Web",
+        title: "Sintetizador en Max/MSP",
         url: "https://martindonoso2005-cell.github.io/sintetizador/",
-        img: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80",
-        desc: "Instrumento musical digital con modulación de ondas y frecuencias en tiempo real.",
-        tag: "Web Audio"
+        img: "img/sintetizador.jpg",
+        desc: "Instrumento en Max/MSP con piano, síntesis FM y AM, batería por ruido y reproductor de muestras, controlados desde una sola interfaz.",
+        tag: "Síntesis Sonora"
       },
       {
         id: 5,
         title: "Interfaz Electrodoméstico",
         url: "https://martindonoso2005-cell.github.io/Interfaz-electrodomestico/",
-        img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
-        desc: "Diseño y simulación de interfaz de usuario digital para sistemas del hogar.",
-        tag: "UI/UX"
+        img: "img/electrodomestico.jpg",
+        desc: "Análisis de las entradas y salidas de interfaz de un hervidor eléctrico digital: controles físicos, señales visuales y sonoras.",
+        tag: "Análisis de Interfaz"
       },
       {
         id: 6,
         title: "Sonificador 2.0",
         url: "https://martindonoso2005-cell.github.io/Sonificador-2.0/",
-        img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80",
-        desc: "Evolución del motor de sonificación con parámetros sonoros avanzados y filtros.",
-        tag: "DSP Audio"
+        img: "img/sonificador-2.jpg",
+        desc: "Escáner espectral que recorre una imagen columna por columna y convierte sus píxeles en sonido, inspirado en las sonificaciones de la NASA.",
+        tag: "Sonificación"
       }
     ];
 
     let projects = JSON.parse(localStorage.getItem('martin_portfolio_projects_v2')) || DEFAULT_PROJECTS;
-    // Si el navegador tiene una lista guardada antigua, suma los proyectos nuevos de la lista pública.
-    DEFAULT_PROJECTS.forEach(d => {
+    // Si el navegador tiene una lista guardada antigua: suma los proyectos nuevos de la lista pública
+    // y actualiza los textos, imágenes y enlaces de los que ya estaban.
+    DEFAULT_PROJECTS.slice().reverse().forEach(d => {
       const guardado = projects.find(p => p.id === d.id);
-      if (!guardado) projects.unshift(d);
-      else if (d.id === 7) guardado.url = d.url; // Robot Face ahora tiene su propia página
+      if (!guardado) projects.unshift({ ...d });
+      else Object.assign(guardado, d);
     });
 
     const projectsContainer = document.getElementById('projectsContainer');
@@ -602,6 +629,7 @@
       adminPanel.classList.toggle('active', isAdmin);
       document.body.classList.toggle('admin-mode', isAdmin);
       adminToggle.textContent = isAdmin ? '[✕] CERRAR' : '[⚙] MODO GESTOR';
+      adminToggle.hidden = !isAdmin; // el botón solo se ve mientras el modo gestor está abierto
       if (!isAdmin) resetFormState();
     }
 
